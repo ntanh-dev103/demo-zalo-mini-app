@@ -62,7 +62,7 @@ export const RecommendFallback: FC = () => {
   const recommendProducts = [...new Array(3)];
 
   return (
-    <Section title="Sản phẩm gợi ý" padding="title-only">
+    <Section title="Gợi ý cho bạn" padding="title-only">
       <Swiper slidesPerView={1.25} spaceBetween={16} className="px-4">
         {recommendProducts.map((_, i) => (
           <SwiperSlide key={i}>
