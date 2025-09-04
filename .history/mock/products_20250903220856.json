@@ -1,0 +1,39 @@
+[
+
+  {
+    "id": 1,
+    "name": "Áo Thun Nam Basic",
+  "image": "/docs/dummy/category-fashion.png",
+    "price": 199000,
+    "categoryId": ["fashion"],
+    "description": "Áo thun cotton thoáng mát, phù hợp mặc hàng ngày.",
+    "variantId": ["color", "size"]
+  },
+  {
+    "id": 2,
+    "name": "Bánh Mì Thịt Nướng",
+  "image": "/docs/dummy/product-food.png",
+    "price": 35000,
+    "categoryId": ["food"],
+    "description": "Bánh mì giòn rụm, thịt nướng thơm ngon, rau củ tươi sạch.",
+    "variantId": ["spicy"]
+  },
+  {
+    "id": 3,
+    "name": "Điện Thoại Thông Minh XPhone 12",
+  "image": "/docs/dummy/category-electronic.png",
+    "price": 12990000,
+    "categoryId": ["electronic"],
+    "description": "Màn hình OLED, camera kép, pin lâu, hiệu năng mạnh mẽ.",
+    "variantId": ["color", "storage"]
+  },
+  {
+    "id": 4,
+    "name": "Ghế Sofa Góc L",
+  "image": "/docs/dummy/category-furniture.png",
+    "price": 5990000,
+    "categoryId": ["furniture"],
+    "description": "Sofa bọc vải cao cấp, khung gỗ tự nhiên, thiết kế hiện đại.",
+    "variantId": ["color"]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "coffee",
+    "name": "Thoiơời trang",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-coffee.svg"
+  },
+  {
+    "id": "matcha",
+    "name": "Trà xanh",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-matcha.svg"
+  },
+  {
+    "id": "food",
+    "name": "Đồ ăn vặt",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-food.svg"
+  },
+  {
+    "id": "milktea",
+    "name": "Trà sữa",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-milktea.svg"
+  },
+  {
+    "id": "drinks",
+    "name": "Giải khát",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-drinks.svg"
+  },
+  {
+    "id": "bread",
+    "name": "Bánh mỳ",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-bread.svg"
+  },
+  {
+    "id": "juice",
+    "name": "Nước ép",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffeedummy/category-juice.svg"
+  }
+]

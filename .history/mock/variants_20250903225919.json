@@ -1,0 +1,47 @@
+[
+  {
+    "id": "color",
+    "label": "Màu sắc",
+    "type": "single",
+    "default": "white",
+    "options": [
+      { "id": "white", "label": "Trắng" },
+      { "id": "black", "label": "Đen" },
+      { "id": "gray", "label": "Xám" },
+      { "id": "silver", "label": "Bạc" }
+    ]
+  },
+  {
+    "id": "size",
+    "label": "Kích cỡ",
+    "type": "single",
+    "default": "m",
+    "options": [
+      { "id": "s", "label": "Nhỏ" },
+      { "id": "m", "label": "Vừa" },
+      { "id": "l", "label": "To" },
+      { "id": "xl", "label": "XL" }
+    ]
+  },
+  {
+    "id": "spicy",
+    "label": "Mức độ cay",
+    "type": "single",
+    "default": "mild",
+    "options": [
+      { "id": "mild", "label": "Không cay" },
+      { "id": "medium", "label": "Cay vừa" },
+      { "id": "hot", "label": "Cay nhiều" }
+    ]
+  },
+  {
+    "id": "storage",
+    "label": "Dung lượng",
+    "type": "single",
+    "default": "64gb",
+    "options": [
+      { "id": "64gb", "label": "64GB" },
+      { "id": "128gb", "label": "128GB" }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "fashion",
+    "name": "Thời trang",
+    "icon": "/docs/dummy/fashion.png"
+  },
+  {
+    "id": "food",
+    "name": "Ẩm thực",
+    "icon": "/docs/dummy/food.png"
+  },
+  {
+    "id": "electronic",
+    "name": "Điện tử",
+    "icon": "docs/dummy/electronic.png"
+  },
+  {
+    "id": "furniture",
+    "name": "Gia dụng",
+    "icon": "docs/dummy/furniture.png"
+  }
+]

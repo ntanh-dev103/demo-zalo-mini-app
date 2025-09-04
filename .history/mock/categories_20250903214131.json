@@ -1,0 +1,22 @@
+[
+  {
+    "id": "fashion",
+    "name": "Thời trang",
+    "icon": "dummy/fashion.png"
+  },
+  {
+    "id": "food",
+    "name": "Ẩm thực",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffee/dummy/category-matcha.svg"
+  },
+  {
+    "id": "electronic",
+    "name": "Điện tử",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffee/dummy/category-food.svg"
+  },
+  {
+    "id": "furniture",
+    "name": "Gia dụng",
+    "icon": "https://stc-zmp.zadn.vn/templates/zaui-coffee/dummy/category-milktea.svg"
+  }
+]
