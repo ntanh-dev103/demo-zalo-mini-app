@@ -6,22 +6,30 @@ import { Box } from "zmp-ui";
 import { ProductItem } from "components/product/item";
 import { ProductItemSkeleton } from "components/skeletons";
 
+import React, { FC, Suspense } from "react";
+import { Section } from "components/section";
+import { useRecoilValue } from "recoil";
+import { productsState } from "state";
+import { Box } from "zmp-ui";
+import { ProductItem } from "components/product/item";
+import { ProductItemSkeleton } from "components/skeletons";
+
 export const ProductListContent: FC = () => {
   const products = useRecoilValue(productsState);
 
   return (
     <Section title="✨ Danh sách sản phẩm">
-  <Box className="grid grid-cols-2 gap-4">
-    {products.map((product) => (
-      <Box
-        key={product.id}
-        className="rounded-xl shadow-md overflow-hidden bg-white hover:shadow-lg hover:scale-105 transform transition-all duration-200"
-      >
-        <ProductItem product={product} />
+      <Box className="space-y-4">
+        {products.map((product) => (
+          <ProductItem
+            key={product.id}
+            product={product}
+            className="flex items-center p-4 rounded-xl shadow-md bg-white 
+                       hover:shadow-lg hover:scale-[1.01] transform transition-all duration-200"
+          />
+        ))}
       </Box>
-    ))}
-  </Box>
-</Section>
+    </Section>
   );
 };
 

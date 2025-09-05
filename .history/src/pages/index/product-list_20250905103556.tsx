@@ -11,7 +11,8 @@ export const ProductListContent: FC = () => {
 
   return (
     <Section title="✨ Danh sách sản phẩm">
-  <Box className="grid grid-cols-2 gap-4">
+  <Box className="grid grid-cols-1
+   gap-4">
     {products.map((product) => (
       <Box
         key={product.id}
