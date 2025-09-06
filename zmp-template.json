@@ -1,5 +1,5 @@
 {
-  "name": "ZaUI Coffee",
+  "name": "Demo Mini App",
   "options": {
     "headerLogo": {
       "title": "Header Logo",
@@ -11,7 +11,8 @@
       "title": "Primary Color",
       "description": "Màu chủ đạo (áp dụng cho nút, liên kết, biểu tượng,...)",
       "type": "color",
-      "optional": true
+      "optional": true,
+      "default": "#2563eb"
     },
     "currencySymbol": {
       "title": "Currency Symbol",
