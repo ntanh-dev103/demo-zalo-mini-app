@@ -18,7 +18,7 @@ const NotificationList: FC = () => {
       >
         <img className="w-10 h-10 rounded-full" src={item.image} />
         <Box className="flex-1">
-          <Text.Header className="text-blue-600">{item.title}</Text.Header>
+          <Text.Header className="text-blue-550">{item.title}</Text.Header>
           <Text
             size="small"
             className="text-gray overflow-hidden whitespace-nowrap text-ellipsis"
@@ -38,7 +38,7 @@ const NotificationList: FC = () => {
 
 const NotificationPage: FC = () => {
   return (
-    <Page className="bg-blue-100">
+    <Page>
       <Header title="Thông báo" showBackIcon={false} />
       <Divider />
       <NotificationList />

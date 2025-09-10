@@ -38,7 +38,7 @@ const NotificationList: FC = () => {
 
 const NotificationPage: FC = () => {
   return (
-    <Page className="bg-blue-100">
+    <Page className="bg-blue-200">
       <Header title="Thông báo" showBackIcon={false} />
       <Divider />
       <NotificationList />

@@ -14,7 +14,7 @@ const NotificationList: FC = () => {
     items={notifications}
     renderLeft={(item) => (
       <Box
-        className="flex items-center space-x-2 p-3 rounded-sm shadow-md transform transition-transform duration-300 hover:shadow-blue-500/40 hover:-translate-x-1 hover:scale-105"
+        className="flex items-center  space-x-2 p-3 rounded-sm shadow-md transform transition-transform duration-300 hover:shadow-blue-500/40 hover:-translate-x-1 hover:scale-105"
       >
         <img className="w-10 h-10 rounded-full" src={item.image} />
         <Box className="flex-1">

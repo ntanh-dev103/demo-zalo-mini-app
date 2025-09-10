@@ -115,7 +115,7 @@ const Other: FC = () => {
 
 const ProfilePage: FC = () => {
   return (
-    <Page className="bg-blue-200"> {/* Or any Tailwind background class */}
+    <Page>
       <Header showBackIcon={false} title="&nbsp;" />
       <Subscription />
       <Personal />

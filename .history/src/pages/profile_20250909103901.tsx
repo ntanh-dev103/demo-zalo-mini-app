@@ -39,7 +39,7 @@ const Personal: FC = () => {
   const onClick = useToBeImplemented();
 
   return (
-    <Box className="m-4">
+    <Box className="m-4 b">
       <ListRenderer
         title="Cá nhân"
         onClick={onClick}

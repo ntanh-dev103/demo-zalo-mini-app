@@ -12,7 +12,7 @@ export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
 
   return (
-    <Box className="space-y-3 px-4 pt-4 pb-20">
+    <Box className="space-y-3 px-4 pt-4 pb-20 bg-blue-100">
       <Text.Header>Hình thức nhận hàng</Text.Header>
       <ListRenderer
         items={[

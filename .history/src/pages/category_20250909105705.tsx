@@ -50,7 +50,7 @@ return (
     {productsByCategory.map((product) => (
       <Box
         key={product.id}
-        className="overflow-hidden bg-white border border-blue-200 p-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/100 transform transition-all duration-300"
+        className="overflow-hidden bg-blue-200 border border-blue-200 p-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/100 transform transition-all duration-300"
       >
         <ProductItem product={product} />
       </Box>

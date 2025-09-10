@@ -19,9 +19,9 @@ const Subscription: FC = () => {
   );
 
   return (
-    <Box className="m-4" onClick={requestUserInfo}>
+    <Box className="m-4 bg-blue" onClick={requestUserInfo}>
       <Box
-        className="bg-blue-500 text-white rounded-xl p-4 space-y-2"
+        className="bg-blue-400 text-white rounded-xl p-4 space-y-2"
         style={{
           backgroundImage: `url(${subscriptionDecor})`,
           backgroundPosition: "right 8px center",
@@ -115,7 +115,7 @@ const Other: FC = () => {
 
 const ProfilePage: FC = () => {
   return (
-    <Page className="bg-blue-200"> {/* Or any Tailwind background class */}
+    <Page>
       <Header showBackIcon={false} title="&nbsp;" />
       <Subscription />
       <Personal />
