@@ -16,12 +16,12 @@ export const Categories: FC = () => {
   };
 
   return (
-    <Box className="bg-white grid grid-cols-4 gap-4 p-5">
+    <Box className="bg-white grid grid-cols-4 gap-4 p-4">
       {categories.map((category, i) => (
         <div
           key={i}
           onClick={() => gotoCategory(category.id)}
-              className="flex flex-col space-y-2 items-center cursor-pointer bg-white rounded-xl shadow transition-all duration-200 border border-transparent hover:bg-blue-500/10 hover:scale-105 hover:hover:shadow-lg hover:border-blue-600 hover:border-2 hover:opacity-100"
+              className="flex flex-col space-y-2 space- items-center cursor-pointer bg-white rounded-xl shadow transition-all duration-200 border border-transparent hover:bg-primary/10 hover:scale-105 hover:shadow-xl hover:border-primary hover:border-2 hover:opacity-100"
         >
           <img className="w-12 h-12" src={category.icon} />
           <Text size="xxSmall" className="text-gray">

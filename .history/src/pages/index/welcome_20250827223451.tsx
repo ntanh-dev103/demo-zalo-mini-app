@@ -7,7 +7,7 @@ import { getConfig } from "utils/config";
 export const Welcome: FC = () => {
   return (
     <Header
-      className="app-header bg-blue-200 no-border pl-4 flex-none pb-[6px]"
+      className="app-header no-border pl-4 flex-none pb-[6px]"
       showBackIcon={false}
       title={
         (

@@ -22,7 +22,7 @@ export const RecommendContent: FC = () => {
               {({ open }) => (
                 <div onClick={open} className="space-y-3">
                   <Box
-                    className="relative aspect-video rounded-lg bg-cover bg-center bg-skeleton"
+                    className="relative aspect-video rounded-lg bg-cover bg-blue-100 bg-center bg-skeleton"
                     style={{ backgroundImage: `url(${product.image})` }}
                   >
                     {product.sale && (
@@ -39,7 +39,7 @@ export const RecommendContent: FC = () => {
                       </Text>
                     )}
                   </Box>
-                  <Box className="space-y-2 px-1 text-center">
+                  <Box className="space-y-2">
                     <Text size="small">{product.name}</Text>
                     <Text size="xSmall" className="line-through text-gray">
                       <DisplayPrice>{product.price}</DisplayPrice>
