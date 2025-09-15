@@ -154,7 +154,50 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   ></div>
                 </Text>
               </Box>
-              
+              {/* --- Reviews Section --- */}
+              <Box className="space-y-3 border-t pt-3">
+                <Text.Title className="text-lg">Đánh giá</Text.Title>
+
+                {/* Existing Reviews */}
+                {reviews.length === 0 ? (
+                  <Text className="text-gray">Chưa có đánh giá nào</Text>
+                ) : (
+                  reviews.map((r, i) => (
+                    <Box key={i} className="border-b pb-2">
+                      <Text>
+                        {"⭐".repeat(r.rating)}{" "}
+                        <span className="text-gray">({r.rating}/5)</span>
+                      </Text>
+                      <Text>{r.comment}</Text>
+                    </Box>
+                  ))
+                )}
+
+                {/* Add Review */}
+                <Box className="space-y-2">
+                  <Text className="font-semibold">Thêm đánh giá của bạn</Text>
+                  <Box className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Text
+                        key={star}
+                        className={`cursor-pointer text-2xl ${
+                          star <= rating ? "text-yellow-500" : "text-gray"
+                        }`}
+                        onClick={() => setRating(star)}
+                      >
+                        ⭐
+                      </Text>
+                    ))}
+                  </Box>
+                  <Input.TextArea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Nhập nhận xét của bạn..."
+                  />
+                  <Button onClick={submitReview}>
+                    Gửi đánh giá
+                  </Button>
+                </Box>
 
               {/* Variant Pickers */}
               <Box className="space-y-5">
@@ -215,10 +258,9 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   </Button>
                 )}
               </Box>
-              
 
               {/* --- Reviews Section --- */}
-              <Box className="space-y-3 pt-3">
+              <Box className="space-y-3 border-t pt-3">
                 <Text.Title className="text-lg">Đánh giá</Text.Title>
 
                 {/* Existing Reviews */}

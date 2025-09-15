@@ -154,7 +154,6 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   ></div>
                 </Text>
               </Box>
-              
 
               {/* Variant Pickers */}
               <Box className="space-y-5">
@@ -215,10 +214,9 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   </Button>
                 )}
               </Box>
-              
 
               {/* --- Reviews Section --- */}
-              <Box className="space-y-3 pt-3">
+              <Box className="space-y-3 border-t pt-3">
                 <Text.Title className="text-lg">Đánh giá</Text.Title>
 
                 {/* Existing Reviews */}

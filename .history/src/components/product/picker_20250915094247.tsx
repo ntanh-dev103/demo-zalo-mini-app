@@ -154,7 +154,6 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   ></div>
                 </Text>
               </Box>
-              
 
               {/* Variant Pickers */}
               <Box className="space-y-5">
@@ -188,37 +187,8 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                     )
                   )}
                 <QuantityPicker value={quantity} onChange={setQuantity} />
-
-                {/* Cart Button */}
-                {selected ? (
-                  <Button
-                    variant={quantity > 0 ? "primary" : "secondary"}
-                    type={quantity > 0 ? "highlight" : "neutral"}
-                    fullWidth
-                    onClick={addToCart}
-                  >
-                    {quantity > 0
-                      ? selected
-                        ? "Cập nhật giỏ hàng"
-                        : "Thêm vào giỏ hàng"
-                      : "Xoá"}
-                  </Button>
-                ) : (
-                  <Button
-                    disabled={!quantity}
-                    variant="primary"
-                    type="highlight"
-                    fullWidth
-                    onClick={addToCart}
-                  >
-                    Thêm vào giỏ hàng
-                  </Button>
-                )}
-              </Box>
-              
-
-              {/* --- Reviews Section --- */}
-              <Box className="space-y-3 pt-3">
+                {/* --- Reviews Section --- */}
+              <Box className="space-y-3 border-t pt-3">
                 <Text.Title className="text-lg">Đánh giá</Text.Title>
 
                 {/* Existing Reviews */}
@@ -257,11 +227,39 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Nhập nhận xét của bạn..."
                   />
-                  <Button onClick={submitReview}>
+                  <Button type="primary" onClick={submitReview}>
                     Gửi đánh giá
                   </Button>
                 </Box>
               </Box>
+                {/* Cart Button */}
+                {selected ? (
+                  <Button
+                    variant={quantity > 0 ? "primary" : "secondary"}
+                    type={quantity > 0 ? "highlight" : "neutral"}
+                    fullWidth
+                    onClick={addToCart}
+                  >
+                    {quantity > 0
+                      ? selected
+                        ? "Cập nhật giỏ hàng"
+                        : "Thêm vào giỏ hàng"
+                      : "Xoá"}
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={!quantity}
+                    variant="primary"
+                    type="highlight"
+                    fullWidth
+                    onClick={addToCart}
+                  >
+                    Thêm vào giỏ hàng
+                  </Button>
+                )}
+              </Box>
+
+              
             </Box>
           )}
         </Sheet>,
