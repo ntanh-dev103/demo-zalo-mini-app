@@ -247,7 +247,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                         key={star}
                         className={`cursor-pointer text-2xl ${
                           star <= rating ? "text-yellow-500" : "text-gray"
-                        }hover:scale-110`}
+                        }hover:scale-110 transition-transform`}
                         onClick={() => setRating(star)}
                       >
                         ⭐

@@ -2,28 +2,26 @@ import { ElasticTextarea } from "components/elastic-textarea";
 import { ListRenderer } from "components/list-renderer";
 import React, { FC, Suspense } from "react";
 import { Box, Icon, Text } from "zmp-ui";
-import { RequestPersonPickerPhone } from "./person-picker";
+import { PersonPicker, RequestPersonPickerPhone } from "./person-picker";
 import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { LocationPicker } from "./location-picker";
-import { orderNoteState, shippingMethodState, finalTotalState } from "state";
+import { orderNoteState, shippingMethodState } from "state";
 import { CouponPicker } from "./coupon-picker";
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
-  const { subtotal, shippingFee, discount, total } =
-    useRecoilValue(finalTotalState);
 
   return (
-    <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
+    <Box className="space-y-3 px-4 pt-4 pb-20">
       <Text.Header>Hình thức nhận hàng</Text.Header>
       <ListRenderer
         items={[
           {
             left: <Icon icon="zi-pin" className="my-auto" />,
-            right: <LocationPicker />,
+            right: <LocationPicker />, 
           },
           {
             left: <Icon icon="zi-clock-1" className="my-auto" />,
@@ -41,16 +39,20 @@ export const Delivery: FC = () => {
           },
           {
             left: <Icon icon="zi-user" className="my-auto" />,
-            right: <RequestPersonPickerPhone />,
+            right: (
+            <RequestPersonPickerPhone />
+            ),
           },
           {
             left: <Icon icon="zi-exclamation" className="my-auto" />,
-            right: <CouponPicker />,
-          },
+  right: <CouponPicker />,
+          }
+          
           {
             left: <Icon icon="zi-location" className="my-auto" />,
-            right: <Transportation />,
+            right: <Transportation/>
           },
+
           {
             left: <Icon icon="zi-note" className="my-auto" />,
             right: (
@@ -66,26 +68,10 @@ export const Delivery: FC = () => {
             ),
           },
         ]}
-        limit={6}
+        limit={5}
         renderLeft={(item) => item.left}
         renderRight={(item) => item.right}
       />
-
-      <Box className="p-4 space-y-2 border-t border-gray-200 bg-white">
-        <Text>Tạm tính: {subtotal.toLocaleString()}₫</Text>
-        <Text>
-          Phí vận chuyển:{" "}
-          {shippingFee > 0 ? `${shippingFee.toLocaleString()}₫` : "Miễn phí"}
-        </Text>
-        {discount > 0 && (
-          <Text className="text-green font-medium">
-            Giảm giá: -{discount.toLocaleString()}₫
-          </Text>
-        )}
-        <Text className="font-semibold text-primary text-lg">
-          Tổng thanh toán: {total.toLocaleString()}₫
-        </Text>
-      </Box>
     </Box>
   );
 };

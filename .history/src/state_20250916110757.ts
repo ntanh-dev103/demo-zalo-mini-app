@@ -167,7 +167,6 @@ export const finalTotalState = selector({
     };
   },
 });
-
 export const shippingMethodState = atom<"standard" | "express">({
   key: "shippingMethod",
   default: "standard",

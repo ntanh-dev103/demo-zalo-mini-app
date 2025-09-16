@@ -17,7 +17,7 @@ export const Delivery: FC = () => {
     useRecoilValue(finalTotalState);
 
   return (
-    <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
+    <Box className="space-y-3 px-4 pt-4 pb-20">
       <Text.Header>Hình thức nhận hàng</Text.Header>
       <ListRenderer
         items={[
@@ -71,18 +71,19 @@ export const Delivery: FC = () => {
         renderRight={(item) => item.right}
       />
 
-      <Box className="p-4 space-y-2 border-t border-gray-200 bg-white">
+      {/* Checkout Summary */}
+      <Box className="p-4 space-y-2 border-t">
         <Text>Tạm tính: {subtotal.toLocaleString()}₫</Text>
         <Text>
           Phí vận chuyển:{" "}
           {shippingFee > 0 ? `${shippingFee.toLocaleString()}₫` : "Miễn phí"}
         </Text>
         {discount > 0 && (
-          <Text className="text-green font-medium">
+          <Text className="text-green-600">
             Giảm giá: -{discount.toLocaleString()}₫
           </Text>
         )}
-        <Text className="font-semibold text-primary text-lg">
+        <Text className="font-semi-bold text-primary text-lg">
           Tổng thanh toán: {total.toLocaleString()}₫
         </Text>
       </Box>

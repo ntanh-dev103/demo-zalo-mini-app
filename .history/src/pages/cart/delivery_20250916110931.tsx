@@ -1,23 +1,31 @@
 import { ElasticTextarea } from "components/elastic-textarea";
 import { ListRenderer } from "components/list-renderer";
-import React, { FC, Suspense } from "react";
+import React, { FC } from "react";
 import { Box, Icon, Text } from "zmp-ui";
 import { RequestPersonPickerPhone } from "./person-picker";
 import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
-import { orderNoteState, shippingMethodState, finalTotalState } from "state";
+import {
+  orderNoteState,
+  shippingMethodState,
+  totalPriceState,
+  totalPriceWithCouponState,
+  couponState,
+} from "state";
 import { CouponPicker } from "./coupon-picker";
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
-  const { subtotal, shippingFee, discount, total } =
-    useRecoilValue(finalTotalState);
+
+  const subtotal = useRecoilValue(totalPriceState);
+  const total = useRecoilValue(totalPriceWithCouponState);
+  const coupon = useRecoilValue(couponState);
 
   return (
-    <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
+    <Box className="space-y-3 px-4 pt-4 pb-20">
       <Text.Header>Hình thức nhận hàng</Text.Header>
       <ListRenderer
         items={[
@@ -70,22 +78,36 @@ export const Delivery: FC = () => {
         renderLeft={(item) => item.left}
         renderRight={(item) => item.right}
       />
+const CheckoutSummary = () => {
+  const { subtotal, shippingFee, discount, total } = useRecoilValue(finalTotalState);
 
-      <Box className="p-4 space-y-2 border-t border-gray-200 bg-white">
-        <Text>Tạm tính: {subtotal.toLocaleString()}₫</Text>
-        <Text>
-          Phí vận chuyển:{" "}
-          {shippingFee > 0 ? `${shippingFee.toLocaleString()}₫` : "Miễn phí"}
+  return (
+    <Box className="p-4 space-y-2 border-t">
+      <Text>Tạm tính: {subtotal.toLocaleString()}₫</Text>
+      <Text>
+        Phí vận chuyển: {shippingFee > 0 ? `${shippingFee.toLocaleString()}₫` : "Miễn phí"}
+      </Text>
+      {discount > 0 && (
+        <Text className="text-green-600">
+          Giảm giá: -{discount.toLocaleString()}₫
         </Text>
-        {discount > 0 && (
-          <Text className="text-green font-medium">
-            Giảm giá: -{discount.toLocaleString()}₫
-          </Text>
-        )}
-        <Text className="font-semibold text-primary text-lg">
-          Tổng thanh toán: {total.toLocaleString()}₫
-        </Text>
-      </Box>
+      )}
+      <Text className="font-bold text-lg">
+        Tổng thanh toán: {total.toLocaleString()}₫
+      </Text>
+    </Box>
+  );
+};
+
+export default CheckoutSummary;
+  )}
+
+  {/* Final total */}
+  <Text className="font-bold text-lg">
+    Tổng thanh toán: {total.toLocaleString()}₫
+  </Text>
+</Box>
+
     </Box>
   );
 };

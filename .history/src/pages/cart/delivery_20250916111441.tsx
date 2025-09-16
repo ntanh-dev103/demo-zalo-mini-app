@@ -17,7 +17,7 @@ export const Delivery: FC = () => {
     useRecoilValue(finalTotalState);
 
   return (
-    <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
+    <Box className="space-y-3 px-4 pt-4 pb-20 ">
       <Text.Header>Hình thức nhận hàng</Text.Header>
       <ListRenderer
         items={[
