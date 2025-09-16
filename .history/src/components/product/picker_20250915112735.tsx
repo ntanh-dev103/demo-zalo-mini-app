@@ -46,7 +46,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
   const [quantity, setQuantity] = useState(1);
   const setCart = useSetRecoilState(cartState);
 
-  // --- Review state ---
+  // --- New state for reviews ---
   const [reviews, setReviews] = useState<{ rating: number; comment: string }[]>(
     []
   );
@@ -113,7 +113,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
     setVisible(false);
   };
 
-  // --- Submit review ---
+  // --- Submit review handler ---
   const submitReview = () => {
     if (!rating || !comment.trim()) return;
     setReviews([...reviews, { rating, comment }]);
@@ -128,11 +128,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
         close: () => setVisible(false),
       })}
       {createPortal(
-        <Sheet
-          visible={visible}
-          onClose={() => setVisible(false)}
-          autoHeight={false}
-        >
+        <Sheet visible={visible} onClose={() => setVisible(false)} autoHeight={false}>
           {product && (
             <Box className="max-h-[80vh] overflow-y-auto" p={4}>
               {/* Product Image */}
@@ -140,7 +136,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-48 object-cover rounded-xl mb-4"
+                  className="w-full h-48 object-cover rounded-xl"
                 />
               )}
 
@@ -158,6 +154,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   ></div>
                 </Text>
               </Box>
+              
 
               {/* Variant Pickers */}
               <Box className="space-y-5">
@@ -218,9 +215,10 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   </Button>
                 )}
               </Box>
+              
 
               {/* --- Reviews Section --- */}
-              <Box className="space-y-3 pt-5">
+              <Box className="space-y-3 pt-3">
                 <Text.Title className="text-lg">Đánh giá</Text.Title>
 
                 {/* Existing Reviews */}
@@ -259,7 +257,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Nhập nhận xét của bạn..."
                   />
-                  <Button onClick={submitReview} variant="primary">
+                  <Button onClick={submitReview}>
                     Gửi đánh giá
                   </Button>
                 </Box>
