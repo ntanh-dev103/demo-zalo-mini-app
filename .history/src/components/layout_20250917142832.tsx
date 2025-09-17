@@ -42,7 +42,7 @@ export const Layout: FC = () => {
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/profile" element={<ProfilePage />}></Route>
           <Route path="/result" element={<CheckoutResultPage />}></Route>
-          <Route path="/order-tracking" element={<OrderTracking />}></Route>
+          
         </Routes>
       </Box>
       <Navigation />

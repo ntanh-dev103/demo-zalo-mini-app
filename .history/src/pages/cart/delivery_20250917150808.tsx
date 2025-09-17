@@ -25,7 +25,7 @@ export const Delivery: FC = () => {
   return (
     <Box className="px-4 pt-4 pb-24 space-y-6">
       {/* Section: Hình thức nhận hàng */}
-      <Box className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <Box className="bg-white rounded-lg shadow-sm border border-primary               ">
         <Text.Header className="px-4 py-3 border-b border-gray-200">
           Hình thức nhận hàng
         </Text.Header>

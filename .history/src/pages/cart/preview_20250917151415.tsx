@@ -35,7 +35,7 @@ export const CartPreview: FC = () => {
       </Box>
 
       {/* Right: button */}
-      <Box className="flex-1 flex items-center justify-end">
+      <Box className="flex-1 flex justify-end">
         <Button
           type="highlight"
           disabled={!quantity}

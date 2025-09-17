@@ -13,7 +13,7 @@ export const CartItem: FC<CartItemProps> = ({ item, selected, toggleItem }) => {
     <Box
       key={item.product.id}
       flex
-      className=""
+      className="p-4 mb-3 rounded-xl border border-red bg-white shadow-sm hover:shadow-md transition"
     >
       {/* checkbox */}
       <input

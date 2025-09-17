@@ -8,23 +8,22 @@ import { Divider } from "components/divider";
 const NotificationList: FC = () => {
   const notifications = useRecoilValue(notificationsState);
   return (
-    <Box className="p-4 space-y-4"> 
+    <Box className="p-3 space-y-3"> 
       {notifications.map((item) => (
         <Box
           key={item.id}
           className="
-            flex items-center space-x-3 p-4 rounded-xl 
+            flex items-center space-x-2 p-3 rounded-md 
             bg-white shadow-md
-            transition transform
-            hover:shadow-xl hover:-translate-y-1
+            transition
           "
         >
-          <img className="w-12 h-12 rounded-full" src={item.image} />
+          <img className="w-10 h-10 rounded-full" src={item.image} />
           <Box className="flex-1">
-            <Text.Header className="text-blue-700 font-semibold">{item.title}</Text.Header>
+            <Text.Header className="text-blue-600">{item.title}</Text.Header>
             <Text
               size="small"
-              className="text-gray-600 overflow-hidden text-ellipsis line-clamp-2 break-words"
+              className="text-gray overflow-hidden text-ellipsis line-clamp-2 break-words"
             >
               {item.content}
             </Text>
@@ -37,7 +36,7 @@ const NotificationList: FC = () => {
 
 const NotificationPage: FC = () => {
   return (
-    <Page className="bg-blue-200 min-h-screen">
+    <Page className="bg-blue-50 min-h-screen">
       <Header title="Thông báo" showBackIcon={false} />
       <Divider />
       <NotificationList />

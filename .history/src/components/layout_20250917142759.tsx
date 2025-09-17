@@ -8,7 +8,7 @@ import CartPage from "pages/cart";
 import NotificationPage from "pages/notification";
 import ProfilePage from "pages/profile";
 import SearchPage from "pages/search";
-import { OrderTracking } from "pages/order-tracking";
+import { o } from "order-tracking";
 import CheckoutResultPage from "pages/result";
 import { getSystemInfo } from "zmp-sdk";
 import { ScrollRestoration } from "./scroll-restoration";
@@ -42,7 +42,6 @@ export const Layout: FC = () => {
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/profile" element={<ProfilePage />}></Route>
           <Route path="/result" element={<CheckoutResultPage />}></Route>
-          <Route path="/order-tracking" element={<OrderTracking />}></Route>
         </Routes>
       </Box>
       <Navigation />
