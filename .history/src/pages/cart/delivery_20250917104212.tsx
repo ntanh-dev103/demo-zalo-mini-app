@@ -7,20 +7,19 @@ import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
-import {
-  orderNoteState,
-  shippingMethodState,
-  couponState,
-  selectedFinalTotalState,
-} from "state";
+import { selectedTotalPriceState, couponState, shippingMethodState, orderNoteState, selectedFinalTotalState } from "state";
 import { CouponPicker } from "./coupon-picker";
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
 
-  const totals = useRecoilValue(selectedFinalTotalState);
-  const coupon = useRecoilValue(couponState);
+  
+const subtotal = useRecoilValue(selectedTotalPriceState);
+const coupon = useRecoilValue(couponState);
+
+let shippingFee = shipping === "express" ? 30000 : 0;
+let discount = 0;
 
   return (
     <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">

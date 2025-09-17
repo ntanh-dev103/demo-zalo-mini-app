@@ -7,20 +7,17 @@ import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
-import {
-  orderNoteState,
-  shippingMethodState,
-  couponState,
-  selectedFinalTotalState,
-} from "state";
+import { orderNoteState, shippingMethodState,couponState, finalTotalState } from "state";
 import { CouponPicker } from "./coupon-picker";
+
+const totals = useRecoilValue(finalTotalState);
+const coupon = useRecoilValue(couponState);
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
-
-  const totals = useRecoilValue(selectedFinalTotalState);
-  const coupon = useRecoilValue(couponState);
+  const { subtotal, shippingFee, discount, total } =
+    useRecoilValue(finalTotalState);
 
   return (
     <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
@@ -77,7 +74,6 @@ export const Delivery: FC = () => {
         renderRight={(item) => item.right}
       />
 
-      {/* Totals box */}
       <Box className="p-4 space-y-2 border-t">
   <Text>Thành tiền: {totals.subtotal.toLocaleString()}₫</Text>
 

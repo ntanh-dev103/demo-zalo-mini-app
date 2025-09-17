@@ -6,18 +6,28 @@ import React, { FC, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import { cartState, selectedCartItemsState } from "state";
 import { CartItem } from "types/cart";
-import { Box, Text, Button } from "zmp-ui";
+import { Box, Text } from "zmp-ui";
 
-export const CartItems: FC = React.memo(() => {
+
+export const CartItems: FC = () => {
   const cart = useRecoilValue(cartState);
   const [editingItem, setEditingItem] = useState<CartItem | undefined>();
   const [selectedIds, setSelectedIds] = useRecoilState(selectedCartItemsState);
 
+  // toggle selection
   const toggleSelect = (key: string) => {
     setSelectedIds((prev) =>
       prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
     );
   };
+
+  // create unique key for each cart item (product + options only)
+  const getItemKey = (item: CartItem) =>
+    JSON.stringify({
+  product: item.product.id,
+  options: item.options,
+  quantity: item.quantity,
+});
 
   return (
     <Box className="py-3 px-4">
@@ -31,20 +41,13 @@ export const CartItems: FC = React.memo(() => {
                 setEditingItem(item);
                 open();
               }}
-              renderKey={({ product, options, quantity }) =>
-                JSON.stringify({ product: product.id, options, quantity })
-              }
+              renderKey={(item) => getItemKey(item)}
               renderLeft={(item) => {
-                const key = JSON.stringify({
-                  product: item.product.id,
-                  options: item.options,
-                  quantity: item.quantity,
-                });
+                const key = getItemKey(item);
                 return (
                   <Box flex className="items-center space-x-2">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
                       checked={selectedIds.includes(key)}
                       onChange={() => toggleSelect(key)}
                     />
@@ -79,24 +82,13 @@ export const CartItems: FC = React.memo(() => {
           )}
         </ProductPicker>
       ) : (
-        <Box className="text-center">
-          <Text
-            className="bg-background rounded-xl py-8 px-4 text-gray"
-            size="xxSmall"
-          >
-            Không có sản phẩm trong giỏ hàng
-          </Text>
-          <Button
-            className="mt-4"
-            onClick={() => {
-              // Navigate to products page (implement navigation logic)
-              console.log("Navigate to products");
-            }}
-          >
-            Duyệt sản phẩm
-          </Button>
-        </Box>
+        <Text
+          className="bg-background rounded-xl py-8 px-4 text-center text-gray"
+          size="xxSmall"
+        >
+          Không có sản phẩm trong giỏ hàng
+        </Text>
       )}
     </Box>
   );
-});
+};

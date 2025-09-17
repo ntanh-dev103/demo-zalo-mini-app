@@ -79,23 +79,23 @@ export const Delivery: FC = () => {
 
       {/* Totals box */}
       <Box className="p-4 space-y-2 border-t">
-  <Text>Thành tiền: {totals.subtotal.toLocaleString()}₫</Text>
+        <Text>Thành tiền: {totals.subtotal.toLocaleString()}₫</Text>
 
-  {coupon && (
-    <Text className="text-green-600">
-      Giảm giá ({coupon.code}):{" "}
-      {coupon.discountType === "percent"
-        ? `${coupon.value}%`
-        : `-${totals.discount.toLocaleString()}₫`}
-    </Text>
-  )}
+        {coupon && (
+          <Text className="text-green-600">
+            Giảm giá ({coupon.code}):{" "}
+            {coupon.discountType === "percent"
+              ? `${coupon.value}%`
+              : `-${totals.discount.toLocaleString()}₫`}
+          </Text>
+        )}
 
-  <Text>Phí vận chuyển: {totals.shippingFee.toLocaleString()}₫</Text>
+        <Text>Phí vận chuyển: {totals.shippingFee.toLocaleString()}₫</Text>
 
-  <Text className="font-bold">
-    Tổng thanh toán: {totals.total.toLocaleString()}₫
-  </Text>
-</Box>
+        <Text className="font-bold">
+          Tổng thanh toán: {totals.total.toLocaleString()}₫
+        </Text>
+      </Box>
     </Box>
   );
 };

@@ -4,8 +4,8 @@ import { ListRenderer } from "components/list-renderer";
 import { ProductPicker } from "components/product/picker";
 import React, { FC, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { cartState, selectedCartItemsState } from "state";
-import { CartItem } from "types/cart";
+import { cartState, selectedCartItemsState, generateCartItemKey } from "state";
+import {  } from "state";
 import { Box, Text, Button } from "zmp-ui";
 
 export const CartItems: FC = React.memo(() => {
@@ -31,46 +31,50 @@ export const CartItems: FC = React.memo(() => {
                 setEditingItem(item);
                 open();
               }}
-              renderKey={({ product, options, quantity }) =>
-                JSON.stringify({ product: product.id, options, quantity })
-              }
+              renderKey={generateCartItemKey}
               renderLeft={(item) => {
-                const key = JSON.stringify({
-                  product: item.product.id,
-                  options: item.options,
-                  quantity: item.quantity,
-                });
+                const key = generateCartItemKey(item);
                 return (
-                  <Box flex className="items-center space-x-2">
+                  <Box flex className="items-center space-x-3">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
+                      className="w-5 h-5 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
                       checked={selectedIds.includes(key)}
                       onChange={() => toggleSelect(key)}
                     />
-                    <img
-                      className="w-10 h-10 rounded-lg"
-                      src={item.product.image}
-                    />
+                    <Box className="relative">
+                      <img
+                        className="w-12 h-12 rounded-lg object-cover shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
+                        src={item.product.image}
+                        alt={item.product.name}
+                      />
+                      {item.product.sale && (
+                        <Box className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full shadow">
+                          Sale
+                        </Box>
+                      )}
+                    </Box>
                   </Box>
                 );
               }}
               renderRight={(item) => (
                 <Box flex className="space-x-1">
                   <Box className="space-y-1 flex-1">
-                    <Text size="small">{item.product.name}</Text>
+                    <Text size="small" className="font-medium line-clamp-1">
+                      {item.product.name}
+                    </Text>
                     <Text className="text-gray" size="xSmall">
                       <FinalPrice options={item.options}>
                         {item.product}
                       </FinalPrice>
                     </Text>
-                    <Text className="text-gray" size="xxxSmall">
+                    <Text className="text-gray-500" size="xxxSmall">
                       <DisplaySelectedOptions options={item.options}>
                         {item.product}
                       </DisplaySelectedOptions>
                     </Text>
                   </Box>
-                  <Text className="text-primary font-medium" size="small">
+                  <Text className="text-primary font-semibold" size="small">
                     x{item.quantity}
                   </Text>
                 </Box>

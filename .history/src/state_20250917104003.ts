@@ -10,6 +10,7 @@ import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
 import categories from "../mock/categories.json";
+import { CartItem } from "types/cart";
 export const userState = selector({
   key: "user",
   get: async () => {

@@ -7,12 +7,7 @@ import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
-import {
-  orderNoteState,
-  shippingMethodState,
-  couponState,
-  selectedFinalTotalState,
-} from "state";
+import { selectedTotalPriceState, couponState, shippingMethodState } from "state";
 import { CouponPicker } from "./coupon-picker";
 
 export const Delivery: FC = () => {

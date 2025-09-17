@@ -10,6 +10,7 @@ import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
 import categories from "../mock/categories.json";
+
 export const userState = selector({
   key: "user",
   get: async () => {
@@ -85,6 +86,76 @@ export const couponState = atom<Coupon | null>({
   default: null,
 });
 
+// Which items are checked
+export const selectedCartItemsState = atom<string[]>({
+  key: "selectedCartItems",
+  default: [],
+});
+
+// Subtotal of checked items
+export const selectedSubtotalState = selector({
+  key: "selectedSubtotal",
+  get: ({ get }) => {
+    const cart = get(cartState);
+    const selectedIds = get(selectedCartItemsState);
+
+    return cart.reduce((total, item) => {
+      const key = JSON.stringify({
+        product: item.product.id,
+        options: item.options.map((o) => o.id),
+      });
+      if (selectedIds.includes(key)) {
+        return (
+          total +
+          item.quantity * calcFinalPrice(item.product, item.options)
+        );
+      }
+      return total;
+    }, 0);
+  },
+});
+
+// Discount only applies to selected subtotal
+export const discountState = selector({
+  key: "discount",
+  get: ({ get }) => {
+    const subtotal = get(selectedSubtotalState);
+    const coupon = get(couponState);
+    if (!coupon) return 0;
+
+    if (coupon.discountType === "percent") {
+      return (subtotal * coupon.value) / 100;
+    }
+    return coupon.value;
+  },
+});
+
+// Shipping fee (unchanged)
+export const shippingFeeState = selector({
+  key: "shippingFee",
+  get: ({ get }) => {
+    const shipping = get(shippingMethodState);
+    if (shipping === "express") return 30000;
+    return 0;
+  },
+});
+
+// Final total (selected items only)
+export const finalTotalState = selector({
+  key: "finalTotal",
+  get: ({ get }) => {
+    const subtotal = get(selectedSubtotalState);
+    const discount = get(discountState);
+    const shippingFee = get(shippingFeeState);
+
+    return {
+      subtotal,
+      discount,
+      shippingFee,
+      total: Math.max(0, subtotal + shippingFee - discount),
+    };
+  },
+});
 
 
 export const totalQuantityState = selector({
@@ -174,44 +245,6 @@ export const selectedCartItemsState = atom<string[]>({
 });
 
 // Total price of only selected items
-export const selectedSubtotalState = selector({
-  key: "selectedSubtotal",
-  get: ({ get }) => {
-    const cart = get(cartState);
-    const selectedIds = get(selectedCartItemsState);
-
-    return cart.reduce((total, item) => {
-      const key = JSON.stringify({
-  product: item.product.id,
-  options: Array.isArray(item.options)
-    ? item.options.map((o) => (typeof o === "string" ? o : o.id))
-    : [item.options], // fallback if it's a single string
-});
-      if (selectedIds.includes(key)) {
-        return (
-          total +
-          item.quantity * calcFinalPrice(item.product, item.options)
-        );
-      }
-      return total;
-    }, 0);
-  },
-});
-
-export const selectedDiscountState = selector({
-  key: "selectedDiscount",
-  get: ({ get }) => {
-    const subtotal = get(selectedSubtotalState);
-    const coupon = get(couponState);
-
-    if (!coupon) return 0;
-
-    if (coupon.discountType === "percent") {
-      return (subtotal * coupon.value) / 100;
-    }
-    return coupon.value;
-  },
-});
 export const selectedTotalPriceState = selector({
   key: "selectedTotalPrice",
   get: ({ get }) => {
@@ -219,33 +252,11 @@ export const selectedTotalPriceState = selector({
     const selectedIds = get(selectedCartItemsState);
 
     return cart.reduce((total, item) => {
-      const key = getItemKey(item);
-      if (selectedIds.includes(key)) {
-        return total + item.quantity * calcFinalPrice(item.product, item.options);
-      }
-      return total;
-    }, 0);
-  },
-});
-
-export const selectedFinalTotalState = selector({
-  key: "selectedFinalTotal",
-  get: ({ get }) => {
-    const cart = get(cartState);
-    const selectedIds = get(selectedCartItemsState);
-    const shipping = get(shippingMethodState);
-    const coupon = get(couponState);
-
-    // subtotal (only selected items)
-    const subtotal = cart.reduce((total, item) => {
       const key = JSON.stringify({
         product: item.product.id,
-        options: Array.isArray(item.options)
-          ? item.options.map((o) => (typeof o === "string" ? o : o.id))
-          : [item.options],
+        options: item.options,
         quantity: item.quantity,
       });
-
       if (selectedIds.includes(key)) {
         return (
           total +
@@ -254,31 +265,8 @@ export const selectedFinalTotalState = selector({
       }
       return total;
     }, 0);
-
-    // shipping fee
-    let shippingFee = 0;
-    if (shipping === "express") shippingFee = 30000;
-
-    // discount
-    let discount = 0;
-    if (coupon) {
-      if (coupon.discountType === "percent") {
-        discount = (subtotal * coupon.value) / 100;
-      } else {
-        discount = coupon.value;
-      }
-    }
-
-    return {
-      subtotal,
-      shippingFee,
-      discount,
-      total: subtotal + shippingFee - discount,
-    };
   },
 });
-
-
 export const shippingMethodState = atom<"standard" | "express">({
   key: "shippingMethod",
   default: "standard",

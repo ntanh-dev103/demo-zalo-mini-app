@@ -3,16 +3,17 @@ import { DisplaySelectedOptions } from "components/display/selected-options";
 import { ListRenderer } from "components/list-renderer";
 import { ProductPicker } from "components/product/picker";
 import React, { FC, useState } from "react";
-import { useRecoilValue, useRecoilState } from "recoil";
-import { cartState, selectedCartItemsState } from "state";
+import { useRecoilValue } from "recoil";
+import { cartState } from "state";
 import { CartItem } from "types/cart";
-import { Box, Text, Button } from "zmp-ui";
+import { Box, Text } from "zmp-ui";
 
-export const CartItems: FC = React.memo(() => {
+export const CartItems: FC = () => {
   const cart = useRecoilValue(cartState);
   const [editingItem, setEditingItem] = useState<CartItem | undefined>();
-  const [selectedIds, setSelectedIds] = useRecoilState(selectedCartItemsState);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // Toggle selection
   const toggleSelect = (key: string) => {
     setSelectedIds((prev) =>
       prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
@@ -42,12 +43,13 @@ export const CartItems: FC = React.memo(() => {
                 });
                 return (
                   <Box flex className="items-center space-x-2">
+                    {/* Checkbox */}
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
                       checked={selectedIds.includes(key)}
                       onChange={() => toggleSelect(key)}
                     />
+                    {/* Product image */}
                     <img
                       className="w-10 h-10 rounded-lg"
                       src={item.product.image}
@@ -79,24 +81,20 @@ export const CartItems: FC = React.memo(() => {
           )}
         </ProductPicker>
       ) : (
-        <Box className="text-center">
-          <Text
-            className="bg-background rounded-xl py-8 px-4 text-gray"
-            size="xxSmall"
-          >
-            Không có sản phẩm trong giỏ hàng
-          </Text>
-          <Button
-            className="mt-4"
-            onClick={() => {
-              // Navigate to products page (implement navigation logic)
-              console.log("Navigate to products");
-            }}
-          >
-            Duyệt sản phẩm
-          </Button>
+        <Text
+          className="bg-background rounded-xl py-8 px-4 text-center text-gray"
+          size="xxSmall"
+        >
+          Không có sản phẩm trong giỏ hàng
+        </Text>
+      )}
+
+      {/* Debug / Demo: Show which items are selected */}
+      {selectedIds.length > 0 && (
+        <Box className="mt-3 p-2 bg-gray-100 rounded-lg">
+          <Text size="xSmall">Đã chọn {selectedIds.length} sản phẩm</Text>
         </Box>
       )}
     </Box>
   );
-});
+};

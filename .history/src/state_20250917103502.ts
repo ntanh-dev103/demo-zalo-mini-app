@@ -10,6 +10,7 @@ import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
 import categories from "../mock/categories.json";
+
 export const userState = selector({
   key: "user",
   get: async () => {
@@ -172,7 +173,21 @@ export const selectedCartItemsState = atom<string[]>({
   key: "selectedCartItems",
   default: [],
 });
+export const selectedTotalPriceState = selector({
+  key: "selectedTotalPrice",
+  get: ({ get }) => {
+    const cart = get(cartState);
+    const selectedIds = get(selectedCartItemsState);
 
+    return cart.reduce((total, item) => {
+      const key = getItemKey(item);
+      if (selectedIds.includes(key)) {
+        return total + item.quantity * calcFinalPrice(item.product, item.options);
+      }
+      return total;
+    }, 0);
+  },
+});
 // Total price of only selected items
 export const selectedSubtotalState = selector({
   key: "selectedSubtotal",
@@ -210,21 +225,6 @@ export const selectedDiscountState = selector({
       return (subtotal * coupon.value) / 100;
     }
     return coupon.value;
-  },
-});
-export const selectedTotalPriceState = selector({
-  key: "selectedTotalPrice",
-  get: ({ get }) => {
-    const cart = get(cartState);
-    const selectedIds = get(selectedCartItemsState);
-
-    return cart.reduce((total, item) => {
-      const key = getItemKey(item);
-      if (selectedIds.includes(key)) {
-        return total + item.quantity * calcFinalPrice(item.product, item.options);
-      }
-      return total;
-    }, 0);
   },
 });
 

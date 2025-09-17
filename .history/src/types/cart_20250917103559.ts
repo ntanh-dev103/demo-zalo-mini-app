@@ -1,5 +1,6 @@
 import { Product } from "./product";
 
+
 export const getItemKey = (item: CartItem) =>
   JSON.stringify({
     product: item.product.id,

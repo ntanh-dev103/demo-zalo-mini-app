@@ -7,20 +7,14 @@ import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
-import {
-  orderNoteState,
-  shippingMethodState,
-  couponState,
-  selectedFinalTotalState,
-} from "state";
+import { orderNoteState, shippingMethodState,, finalTotalState } from "state";
 import { CouponPicker } from "./coupon-picker";
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
-
-  const totals = useRecoilValue(selectedFinalTotalState);
-  const coupon = useRecoilValue(couponState);
+  const { subtotal, shippingFee, discount, total } =
+    useRecoilValue(finalTotalState);
 
   return (
     <Box className="space-y-3 px-4 pt-4 pb-20 border-t border-gray-200">
@@ -77,25 +71,21 @@ export const Delivery: FC = () => {
         renderRight={(item) => item.right}
       />
 
-      {/* Totals box */}
-      <Box className="p-4 space-y-2 border-t">
-  <Text>Thành tiền: {totals.subtotal.toLocaleString()}₫</Text>
-
-  {coupon && (
-    <Text className="text-green-600">
-      Giảm giá ({coupon.code}):{" "}
-      {coupon.discountType === "percent"
-        ? `${coupon.value}%`
-        : `-${totals.discount.toLocaleString()}₫`}
-    </Text>
-  )}
-
-  <Text>Phí vận chuyển: {totals.shippingFee.toLocaleString()}₫</Text>
-
-  <Text className="font-bold">
-    Tổng thanh toán: {totals.total.toLocaleString()}₫
-  </Text>
-</Box>
+      <Box className="p-4 space-y-2 border-t border-gray-200 bg-white">
+        <Text>Tạm tính: {subtotal.toLocaleString()}₫</Text>
+        <Text>
+          Phí vận chuyển:{" "}
+          {shippingFee > 0 ? `${shippingFee.toLocaleString()}₫` : "Miễn phí"}
+        </Text>
+        {discount > 0 && (
+          <Text className="text-green font-medium">
+            Giảm giá: -{discount.toLocaleString()}₫
+          </Text>
+        )}
+        <Text className="font-semibold text-primary text-lg">
+          Tổng thanh toán: {total.toLocaleString()}₫
+        </Text>
+      </Box>
     </Box>
   );
 };

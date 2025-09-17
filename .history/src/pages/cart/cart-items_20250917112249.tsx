@@ -6,18 +6,28 @@ import React, { FC, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import { cartState, selectedCartItemsState } from "state";
 import { CartItem } from "types/cart";
-import { Box, Text, Button } from "zmp-ui";
+import { Box, Text } from "zmp-ui";
 
-export const CartItems: FC = React.memo(() => {
+
+export const CartItems: FC = () => {
   const cart = useRecoilValue(cartState);
   const [editingItem, setEditingItem] = useState<CartItem | undefined>();
   const [selectedIds, setSelectedIds] = useRecoilState(selectedCartItemsState);
 
+  // toggle selection
   const toggleSelect = (key: string) => {
     setSelectedIds((prev) =>
       prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
     );
   };
+
+  // create unique key for each cart item (product + options only)
+  const getItemKey = (item: CartItem) =>
+    JSON.stringify({
+  product: item.product.id,
+  options: item.options,
+  quantity: item.quantity,
+});
 
   return (
     <Box className="py-3 px-4">
@@ -31,28 +41,34 @@ export const CartItems: FC = React.memo(() => {
                 setEditingItem(item);
                 open();
               }}
-              renderKey={({ product, options, quantity }) =>
-                JSON.stringify({ product: product.id, options, quantity })
-              }
+              renderKey={(item) => getItemKey(item)}
               renderLeft={(item) => {
-                const key = JSON.stringify({
-                  product: item.product.id,
-                  options: item.options,
-                  quantity: item.quantity,
-                });
+                const key = getItemKey(item);
                 return (
-                  <Box flex className="items-center space-x-2">
-                    <input
+                  <Box flex className="items-center space-x-3 p-2 rounded-lg bg-gray-50">
+  <label className="flex items-center cursor-pointer">
+    <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
+                      className="w-5 h-5 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
                       checked={selectedIds.includes(key)}
                       onChange={() => toggleSelect(key)}
                     />
-                    <img
-                      className="w-10 h-10 rounded-lg"
-                      src={item.product.image}
-                    />
-                  </Box>
+    <span className="sr-only">Select {item.product.name}</span>
+  </label>
+  <div className="relative">
+    <img
+      className="w-12 h-12 rounded-xl object-cover shadow-md hover:shadow-lg transition-shadow duration-200"
+      src={item.product.image}
+      alt={item.product.name}
+      loading="lazy"
+    />
+    {item.product.sale && (
+      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+        Sale
+      </div>
+    )}
+  </div>
+</Box>
                 );
               }}
               renderRight={(item) => (
@@ -79,24 +95,13 @@ export const CartItems: FC = React.memo(() => {
           )}
         </ProductPicker>
       ) : (
-        <Box className="text-center">
-          <Text
-            className="bg-background rounded-xl py-8 px-4 text-gray"
-            size="xxSmall"
-          >
-            Không có sản phẩm trong giỏ hàng
-          </Text>
-          <Button
-            className="mt-4"
-            onClick={() => {
-              // Navigate to products page (implement navigation logic)
-              console.log("Navigate to products");
-            }}
-          >
-            Duyệt sản phẩm
-          </Button>
-        </Box>
+        <Text
+          className="bg-background rounded-xl py-8 px-4 text-center text-gray"
+          size="xxSmall"
+        >
+          Không có sản phẩm trong giỏ hàng
+        </Text>
       )}
     </Box>
   );
-});
+};

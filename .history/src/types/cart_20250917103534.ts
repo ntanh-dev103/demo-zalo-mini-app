@@ -1,5 +1,7 @@
 import { Product } from "./product";
 
+import { CartItem } from "types/cart";
+
 export const getItemKey = (item: CartItem) =>
   JSON.stringify({
     product: item.product.id,

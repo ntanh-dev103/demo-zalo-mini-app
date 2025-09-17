@@ -4,8 +4,8 @@ import { ListRenderer } from "components/list-renderer";
 import { ProductPicker } from "components/product/picker";
 import React, { FC, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { cartState, selectedCartItemsState } from "state";
-import { CartItem } from "types/cart";
+import { cartState, selectedCartItemsState, generateCartItemKey } from "state";
+import { CartItem } from "state";
 import { Box, Text, Button } from "zmp-ui";
 
 export const CartItems: FC = React.memo(() => {
@@ -31,26 +31,20 @@ export const CartItems: FC = React.memo(() => {
                 setEditingItem(item);
                 open();
               }}
-              renderKey={({ product, options, quantity }) =>
-                JSON.stringify({ product: product.id, options, quantity })
-              }
+              renderKey={generateCartItemKey}
               renderLeft={(item) => {
-                const key = JSON.stringify({
-                  product: item.product.id,
-                  options: item.options,
-                  quantity: item.quantity,
-                });
+                const key = generateCartItemKey(item);
                 return (
                   <Box flex className="items-center space-x-2">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-2 border-gray-300 focus:border-teal-500 focus:ring-teal-500 checked:bg-teal-500 checked:border-teal-500 transition-colors duration-200"
                       checked={selectedIds.includes(key)}
                       onChange={() => toggleSelect(key)}
                     />
                     <img
                       className="w-10 h-10 rounded-lg"
                       src={item.product.image}
+                      alt={item.product.name}
                     />
                   </Box>
                 );
