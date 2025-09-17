@@ -79,7 +79,7 @@ export const CartItems: FC = React.memo(() => {
     <Box flex className="flex-1 justify-between items-start">
       {/* Product info */}
       <Box className="space-y-1 flex-1 pr-4">
-        <Text size="xSmall" className="font-medium text-primary">
+        <Text size="small" className="font-medium text-primary">
           {item.product.name}
         </Text>
         <Text size="xxSmall" className="text-gray">

@@ -9,7 +9,6 @@ import { calculateDistance } from "utils/location";
 import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
-import { getItemKey } from "types/cart";
 import categories from "../mock/categories.json";
 export const userState = selector({
   key: "user",
@@ -96,10 +95,98 @@ export const totalQuantityState = selector({
   },
 });
 
+export const totalPriceState = selector({
+  key: "totalPrice",
+  get: ({ get }) => {
+    const cart = get(cartState);
+    return cart.reduce(
+      (total, item) =>
+        total + item.quantity * calcFinalPrice(item.product, item.options),
+      0
+    );
+  },
+});
+export const totalPriceWithShippingState = selector({
+  key: "totalPriceWithShipping",
+  get: ({ get }) => {
+    const total = get(totalPriceState); // cart total
+    const shipping = get(shippingMethodState);
 
+    let shippingFee = 0;
+    if (shipping === "express") shippingFee = 30000;
+
+    return total + shippingFee;
+  },
+});
+
+export const totalPriceWithCouponState = selector<number>({
+  key: "totalPriceWithCoupon",
+  get: ({ get }) => {
+    const subtotal = get(totalPriceState);
+    const coupon = get(couponState);
+
+    if (!coupon) return subtotal;
+
+    if (coupon.discountType === "percent") {
+      return Math.max(0, subtotal - (subtotal * coupon.value) / 100);
+    }
+
+    if (coupon.discountType === "fixed") {
+      return Math.max(0, subtotal - coupon.value);
+    }
+
+    return subtotal;
+  },
+});
+
+export const finalTotalState = selector({
+  key: "finalTotal",
+  get: ({ get }) => {
+    const subtotal = get(totalPriceState);
+    const shipping = get(shippingMethodState);
+    const coupon = get(couponState);
+
+    // shipping fee
+    let shippingFee = 0;
+    if (shipping === "express") shippingFee = 30000;
+
+    // discount
+    let discount = 0;
+    if (coupon) {
+      if (coupon.discountType === "percent") {
+        discount = (subtotal * coupon.value) / 100;
+      } else {
+        discount = coupon.value;
+      }
+    }
+
+    return {
+      subtotal,
+      shippingFee,
+      discount,
+      total: subtotal + shippingFee - discount,
+    };
+  },
+});
 export const selectedCartItemsState = atom<string[]>({
   key: "selectedCartItems",
   default: [],
+});
+
+export const selectedSubtotalState = selector({
+  key: "selectedSubtotal",
+  get: ({ get }) => {
+    const cart = get(cartState);
+    const selectedIds = get(selectedCartItemsState);
+
+    return cart.reduce((total, item) => {
+      const key = getItemKey(item);
+      if (selectedIds.includes(key)) {
+        return total + item.quantity * calcFinalPrice(item.product, item.options);
+      }
+      return total;
+    }, 0);
+  },
 });
 
 
@@ -117,17 +204,18 @@ export const selectedDiscountState = selector({
     return coupon.value;
   },
 });
-export const selectedSubtotalState = selector({
-  key: "selectedSubtotal",
+export const selectedTotalPriceState = selector({
+  key: "selectedTotalPrice",
   get: ({ get }) => {
     const cart = get(cartState);
     const selectedIds = get(selectedCartItemsState);
 
     return cart.reduce((total, item) => {
       const key = getItemKey(item);
-      return selectedIds.includes(key)
-        ? total + item.quantity * calcFinalPrice(item.product, item.options)
-        : total;
+      if (selectedIds.includes(key)) {
+        return total + item.quantity * calcFinalPrice(item.product, item.options);
+      }
+      return total;
     }, 0);
   },
 });
@@ -135,19 +223,40 @@ export const selectedSubtotalState = selector({
 export const selectedFinalTotalState = selector({
   key: "selectedFinalTotal",
   get: ({ get }) => {
-    const subtotal = get(selectedSubtotalState);
+    const cart = get(cartState);
+    const selectedIds = get(selectedCartItemsState);
     const shipping = get(shippingMethodState);
     const coupon = get(couponState);
 
+    // subtotal (only selected items)
+    const subtotal = cart.reduce((total, item) => {
+      const key = JSON.stringify({
+        product: item.product.id,
+        options: Array.isArray(item.options)
+          ? item.options.map((o) => (typeof o === "string" ? o : o.id))
+          : [item.options],
+        quantity: item.quantity,
+      });
+
+      if (selectedIds.includes(key)) {
+        return (
+          total +
+          item.quantity * calcFinalPrice(item.product, item.options)
+        );
+      }
+      return total;
+    }, 0);
+
     // shipping fee
-    let shippingFee = shipping === "express" ? 30000 : 0;
+    let shippingFee = 0;
+    if (shipping === "express") shippingFee = 30000;
 
     // discount
     let discount = 0;
     if (coupon) {
       if (coupon.discountType === "percent") {
         discount = (subtotal * coupon.value) / 100;
-      } else if (coupon.discountType === "fixed") {
+      } else {
         discount = coupon.value;
       }
     }

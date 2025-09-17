@@ -90,9 +90,9 @@ export const Delivery: FC = () => {
     </Text>
   )}
 
-  <Text className="text-red-500 font-bold">Phí vận chuyển: {totals.shippingFee.toLocaleString()}₫</Text>
+  <Text>Phí vận chuyển: {totals.shippingFee.toLocaleString()}₫</Text>
 
-  <Text className="font-bold text-lg mt-2 pt-2 border-t border-gray text-primary">
+  <Text className="font-bold text-lg mt-2">
     Tổng thanh toán: {totals.total.toLocaleString()}₫
   </Text>
 </Box>

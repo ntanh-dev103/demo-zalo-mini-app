@@ -9,7 +9,6 @@ import { calculateDistance } from "utils/location";
 import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
-import { getItemKey } from "types/cart";
 import categories from "../mock/categories.json";
 export const userState = selector({
   key: "user",
@@ -96,11 +95,37 @@ export const totalQuantityState = selector({
   },
 });
 
+export const totalPriceState = selector({
+  key: "totalPrice",
+  get: ({ get }) => {
+    const cart = get(cartState);
+    return cart.reduce(
+      (total, item) =>
+        total + item.quantity * calcFinalPrice(item.product, item.options),
+      0
+    );
+  },
+});
+export const totalPriceWithShippingState = selector({
+  key: "totalPriceWithShipping",
+  get: ({ get }) => {
+    const total = get(totalPriceState); // cart total
+    const shipping = get(shippingMethodState);
+
+    let shippingFee = 0;
+    if (shipping === "express") shippingFee = 30000;
+
+    return total + shippingFee;
+  },
+});
+
 
 export const selectedCartItemsState = atom<string[]>({
   key: "selectedCartItems",
   default: [],
 });
+
+
 
 
 export const selectedDiscountState = selector({

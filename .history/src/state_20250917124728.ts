@@ -9,7 +9,6 @@ import { calculateDistance } from "utils/location";
 import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
-import { getItemKey } from "types/cart";
 import categories from "../mock/categories.json";
 export const userState = selector({
   key: "user",
@@ -101,6 +100,8 @@ export const selectedCartItemsState = atom<string[]>({
   key: "selectedCartItems",
   default: [],
 });
+
+
 
 
 export const selectedDiscountState = selector({
