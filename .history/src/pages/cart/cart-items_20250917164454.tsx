@@ -15,6 +15,7 @@ export const CartItem: FC<CartItemProps> = ({ item, selected, toggleItem }) => {
       flex
       className=""
     >
+      {/* checkbox */}
       <input
         type="checkbox"
         checked={selected}
@@ -22,6 +23,7 @@ export const CartItem: FC<CartItemProps> = ({ item, selected, toggleItem }) => {
         className="w-5 h-5 mr-3 rounded border border-gray-400 appearance-none checked:bg-blue-500 checked:border-blue-500 focus:ring-2 focus:ring-blue-300 cursor-pointer"
       />
 
+      {/* product image */}
       <img
         src={item.product.image}
         alt={item.product.name}

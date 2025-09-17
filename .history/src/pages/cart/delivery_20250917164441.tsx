@@ -81,6 +81,7 @@ export const Delivery: FC = () => {
         />
       </Box>
 
+      {/* Section: Totals */}
       <Box className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-2">
         <Text className="font-bold text-primary">
           Thành tiền: {totals.subtotal.toLocaleString()}₫

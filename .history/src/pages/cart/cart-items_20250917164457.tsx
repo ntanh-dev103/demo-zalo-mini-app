@@ -15,6 +15,7 @@ export const CartItem: FC<CartItemProps> = ({ item, selected, toggleItem }) => {
       flex
       className=""
     >
+      {/* checkbox */}
       <input
         type="checkbox"
         checked={selected}
