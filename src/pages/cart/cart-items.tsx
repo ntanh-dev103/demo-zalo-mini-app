@@ -1,3 +1,4 @@
+
 import { FinalPrice } from "components/display/final-price";
 import { DisplaySelectedOptions } from "components/display/selected-options";
 import { ListRenderer } from "components/list-renderer";
@@ -20,57 +21,40 @@ export const CartItems: FC = React.memo(() => {
   };
 
   const updateQuantity = (item: CartItem, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((c) =>
-          c.product.id === item.product.id &&
-          JSON.stringify(c.options) === JSON.stringify(item.options)
-            ? { ...c, quantity: c.quantity + delta }
-            : c
-        )
-        .filter((c) => c.quantity > 0)
+    setCart(
+      (prev) =>
+        prev
+          .map((c) =>
+            c.product.id === item.product.id &&
+            JSON.stringify(c.options) === JSON.stringify(item.options)
+              ? { ...c, quantity: c.quantity + delta }
+              : c
+          )
+          .filter((c) => c.quantity > 0) // auto-remove when 0
     );
   };
 
-  // Replace an item when options change
-  const replaceItem = (oldItem: CartItem, newItem: CartItem) => {
-    setCart((prev) => {
-      return prev.map((c) =>
-        c.product.id === oldItem.product.id &&
-        JSON.stringify(c.options) === JSON.stringify(oldItem.options)
-          ? newItem
-          : c
-      );
-    });
-    setEditingItem(undefined);
-  };
-
   return (
-    <Box className="py-3 px-4 pb-24 space-y-4 min-h-fit w-full">
+    <Box className="py-3 px-4">
       {cart.length > 0 ? (
-        <ProductPicker
-          product={editingItem?.product}
-          selected={editingItem}
-        >
-          {({ open, close }) => (
+        <ProductPicker product={editingItem?.product} selected={editingItem}>
+          {({ open }) => (
             <ListRenderer
               items={cart}
-              renderKey={({ product, options }) =>
-                JSON.stringify({ product: product.id, options })
+              limit={5}
+              // disable opening product page
+              onClick={() => {}}
+              renderKey={({ product, options, quantity }) =>
+                JSON.stringify({ product: product.id, options, quantity })
               }
-              itemClassName="
-                bg-white rounded-lg border border-primary 
-                p-3 mb-2 w-full min-h-[70px] 
-                hover:bg-blue-200 hover:shadow-sm  
-                transition-all duration-200 flex items-center
-              "
               renderLeft={(item) => {
                 const key = JSON.stringify({
                   product: item.product.id,
                   options: item.options,
+                  quantity: item.quantity,
                 });
                 return (
-                  <Box flex className="items-center space-x-2 min-w-[60px]">
+                  <Box flex className="items-start space-x-3">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(key)}
@@ -79,13 +63,14 @@ export const CartItems: FC = React.memo(() => {
                         toggleSelect(key);
                       }}
                       className="
-                        w-4 h-4 rounded border border-primary 
-                        cursor-pointer transition-all duration-200
-                        checked:bg-blue-600 checked:border-blue-600
+                        w-5 h-5 rounded-[4px] border border-gray-400 
+                        appearance-none cursor-pointer transition-all duration-200
+                        checked:bg-blue-500 checked:border-blue-500 
+                        checked:shadow-[0_0_0_2px_white]
                       "
                     />
                     <img
-                      className="w-12 h-12 object-cover rounded-md border border-gray-200 flex-shrink-0"
+                      className="w-16 h-16 object-cover rounded-md border mr-3"
                       src={item.product.image}
                       alt={item.product.name}
                     />
@@ -93,27 +78,13 @@ export const CartItems: FC = React.memo(() => {
                 );
               }}
               renderRight={(item) => (
-                <Box
-                  flex
-                  className="flex-1 justify-between items-center overflow-hidden min-h-[48px]"
-                >
+                <Box flex className="flex-1 justify-between items-start">
                   {/* Product info */}
-                  <Box className="flex flex-col justify-center flex-1 pr-3 overflow-hidden">
-                    <Text
-                      size="xxxSmall"
-                      className="font-medium text-gray-800 truncate leading-tight"
-                    >
+                  <Box className="space-y-1 flex-1 pr-4">
+                    <Text size="xSmall" className="font-medium text-primary">
                       {item.product.name}
                     </Text>
-                    <Text
-                      size="xxSmall"
-                      className="text-gray-500 truncate leading-tight cursor-pointer hover:text-blue-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingItem(item);
-                        open();
-                      }}
-                    >
+                    <Text size="xxSmall" className="text-gray">
                       <DisplaySelectedOptions options={item.options}>
                         {item.product}
                       </DisplaySelectedOptions>
@@ -121,11 +92,11 @@ export const CartItems: FC = React.memo(() => {
                   </Box>
 
                   {/* Quantity + Price */}
-                  <Box flex className="items-center space-x-2 shrink-0">
-                    <Box flex className="items-center space-x-1">
+                  <Box flex className="items-center space-x-3">
+                    <Box flex className="items-center space-x-2">
                       <Button
                         size="small"
-                        className="w-6 h-6 min-w-0 rounded p-0 flex items-center justify-center bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
+                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           updateQuantity(item, -1);
@@ -133,15 +104,12 @@ export const CartItems: FC = React.memo(() => {
                       >
                         -
                       </Button>
-                      <Text
-                        className="text-blue-600 font-semibold min-w-[18px] text-center"
-                        size="xxSmall"
-                      >
+                      <Text className="text-primary font-medium" size="small">
                         {item.quantity}
                       </Text>
                       <Button
                         size="small"
-                        className="w-6 h-6 min-w-0 rounded p-0 flex items-center justify-center bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
+                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           updateQuantity(item, +1);
@@ -150,13 +118,8 @@ export const CartItems: FC = React.memo(() => {
                         +
                       </Button>
                     </Box>
-                    <Text
-                      className="font-semibold text-blue-600 whitespace-nowrap"
-                      size="xxSmall"
-                    >
-                      <FinalPrice options={item.options}>
-                        {item.product}
-                      </FinalPrice>
+                    <Text className="font-semibold text-green" size="small">
+                      <FinalPrice options={item.options}>{item.product}</FinalPrice>
                     </Text>
                   </Box>
                 </Box>
@@ -165,15 +128,15 @@ export const CartItems: FC = React.memo(() => {
           )}
         </ProductPicker>
       ) : (
-        <Box className="flex items-center justify-center flex-col min-h-[200px] text-center">
+        <Box className="text-center">
           <Text
-            className="bg-white border border-primary rounded-lg shadow-sm py-4 px-4 text-gray-500"
-            size="small"
+            className="bg-background rounded-xl py-8 px-4 text-gray"
+            size="xxSmall"
           >
             Không có sản phẩm trong giỏ hàng
           </Text>
           <Button
-            className="mt-4 bg-primary text-white rounded-md hover:bg-primary-dark px-4 py-2"
+            className="mt-4"
             onClick={() => {
               console.log("Navigate to products");
             }}

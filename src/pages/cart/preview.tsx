@@ -12,7 +12,7 @@ export const CartPreview: FC = () => {
   const { subtotal, shippingFee, discount, total } = useRecoilValue(selectedFinalTotalState);
   const selectedItems = useRecoilValue(selectedCartItemsState);
 
-  const quantity = selectedItems.length; 
+  const quantity = selectedItems.length; // number of checked items
 
   return (
     <Box flex className="sticky bottom-0 bg-background p-4 space-x-4">
