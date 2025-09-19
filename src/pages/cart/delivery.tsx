@@ -5,6 +5,7 @@ import { Box, Icon, Text } from "zmp-ui";
 import { RequestPersonPickerPhone } from "./person-picker";
 import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
+<<<<<<< Updated upstream
 import { useRecoilState, useRecoilValue } from "recoil";
 import { LocationPicker } from "./location-picker";
 import {
@@ -14,6 +15,11 @@ import {
   selectedFinalTotalState,
 } from "state";
 import { CouponPicker } from "./coupon-picker";
+=======
+import { useRecoilState } from "recoil";
+//import { LocationPicker } from "./location-picker";
+import { orderNoteState, shippingMethodState } from "state";
+>>>>>>> Stashed changes
 
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
@@ -27,6 +33,7 @@ export const Delivery: FC = () => {
   console.log("Delivery rendered"); // Debug log for white screen
 
   return (
+<<<<<<< Updated upstream
     <Box className="px-4 pt-4 pb-24 space-y-6 border-t border-primary min-h-fit">
       {/* Delivery method section */}
       <Box className="bg-white rounded-lg shadow-sm border border-primary">
@@ -50,6 +57,25 @@ export const Delivery: FC = () => {
                     }}
                   >
                   </Box>
+=======
+    <Box className="space-y-3 px-4 pt-4 pb-20">
+      <Text.Header>Hình thức nhận hàng</Text.Header>
+      <ListRenderer
+        items={[
+          {
+            left: <Icon icon="zi-pin" className="my-auto" />,
+           // right: <LocationPicker />, 
+          },
+          {
+            left: <Icon icon="zi-clock-1" className="my-auto" />,
+            right: (
+              <Box flex className="space-x-2">
+                <Box className="flex-1 space-y-[2px]">
+                  <TimePicker />
+                  <Text size="xSmall" className="text-gray">
+                    Thời gian nhận hàng
+                  </Text>
+>>>>>>> Stashed changes
                 </Box>
               ),
             },

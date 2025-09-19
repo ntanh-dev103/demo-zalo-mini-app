@@ -1,5 +1,5 @@
 import { useVirtualKeyboardVisible } from "hooks";
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { MenuItem } from "types/menu";
 import { BottomNavigation, Icon } from "zmp-ui";
@@ -39,24 +39,34 @@ export const Navigation: FC = () => {
   }, [location]);
 
   if (noBottomNav || keyboardVisible) {
-    return <></>;
+    return null;
   }
 
   return (
     <BottomNavigation
-      id="footer"
-      activeKey={location.pathname}
-      onChange={navigate}
-      className="z-50"
-    >
-      {Object.keys(tabs).map((path: TabKeys) => (
-        <BottomNavigation.Item
-          key={path}
-          label={tabs[path].label}
-          icon={tabs[path].icon}
-          activeIcon={tabs[path].activeIcon}
-        />
-      ))}
-    </BottomNavigation>
+  id="footer"
+  activeKey={
+    location.pathname.startsWith("/profile") ||
+    location.pathname.startsWith("/account") ||
+    location.pathname.startsWith("/orders") ||
+    location.pathname.startsWith("/reviews") ||
+    location.pathname.startsWith("/contact") ||
+    location.pathname.startsWith("/upgrade")
+      ? "/profile" // ✅ gom tất cả route con vào tab Cá nhân
+      : location.pathname
+  }
+  onChange={(key) => navigate(key)}
+  className="z-50"
+>
+  {Object.keys(tabs).map((path: TabKeys) => (
+    <BottomNavigation.Item
+      key={path}
+      label={tabs[path].label}
+      icon={tabs[path].icon}
+      activeIcon={tabs[path].activeIcon}
+    />
+  ))}
+</BottomNavigation>
+
   );
 };
