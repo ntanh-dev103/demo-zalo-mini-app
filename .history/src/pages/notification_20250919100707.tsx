@@ -22,7 +22,7 @@ const NotificationList: FC = () => {
     >
       <img
         className="w-10 h-10 rounded-full flex-shrink-0"
-        src={item.image}
+        src={item.image}a
         alt={item.title}
       />
       <Box className="flex-1 min-w-0">
