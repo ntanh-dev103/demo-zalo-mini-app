@@ -1,8 +1,8 @@
 import React, { FC } from "react";
-import { Box, Header, Icon, Page, Text, Avatar, Button } from "zmp-ui"; // ❌ bỏ IconString
+import { Box, Header, Icon, Page, Text, Avatar, Button } from "zmp-ui"; 
 import subscriptionDecor from "static/subscription-decor.svg";
 import { ListRenderer } from "components/list-renderer";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { userState } from "state";
 import { normalizeTier, tierColors, tierLabels, User } from "types/user";
@@ -52,50 +52,58 @@ const Subscription: FC = () => {
 /* ====== Personal Section ====== */
 const Personal: FC = () => {
   const navigate = useNavigate();
+  const items = [
+    {
+      key: "account",
+      left: <Icon icon="zi-user" />,
+      right: (
+        <Box flex>
+          <Text.Header className="flex-1 font-normal">
+            Thông tin tài khoản
+          </Text.Header>
+          <Icon icon="zi-chevron-right" />
+        </Box>
+      ),
+    },
+    {
+      key: "orders",
+      left: <Icon icon="zi-clock-2" />,
+      right: (
+        <Box flex>
+          <Text.Header className="flex-1 font-normal">
+            Lịch sử đơn hàng
+          </Text.Header>
+          <Icon icon="zi-chevron-right" />
+        </Box>
+      ),
+    },
+    {
+      key: "upgrade",
+      left: <Icon icon="zi-star" />,
+      right: (
+        <Box flex>
+          <Text.Header className="flex-1 font-normal">
+            Nâng hạng thành viên
+          </Text.Header>
+          <Icon icon="zi-chevron-right" />
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box className="m-4">
       <ListRenderer
         title="Cá nhân"
-        items={[
-          {
-            left: <Icon icon="zi-user" />, // ✅ dùng trực tiếp string
-            right: (
-              <Box flex>
-                <Text.Header className="flex-1 font-normal">
-                  Thông tin tài khoản
-                </Text.Header>
-                <Icon icon="zi-chevron-right" />
-              </Box>
-            ),
-            onClick: () => navigate("/account"),
-          },
-          {
-            left: <Icon icon="zi-clock-2" />,
-            right: (
-              <Box flex>
-                <Text.Header className="flex-1 font-normal">
-                  Lịch sử đơn hàng
-                </Text.Header>
-                <Icon icon="zi-chevron-right" />
-              </Box>
-            ),
-            onClick: () => navigate("/orders"),
-          },
-          {
-            left: <Icon icon="zi-star" />, // ✅ thay icon hợp lệ
-            right: (
-              <Box flex>
-                <Text.Header className="flex-1 font-normal">
-                  Nâng hạng thành viên
-                </Text.Header>
-                <Icon icon="zi-chevron-right" />
-              </Box>
-            ),
-            onClick: () => navigate("/upgrade"),
-          },
-        ]}
+        items={items}
+        renderKey={(item) => item.key}
         renderLeft={(item) => item.left}
         renderRight={(item) => item.right}
+        onClick={(item) => {
+          if (item.key === "account") navigate("/account");
+          if (item.key === "orders") navigate("/orders");
+          if (item.key === "upgrade") navigate("/upgrade");
+        }}
       />
     </Box>
   );
@@ -104,38 +112,45 @@ const Personal: FC = () => {
 /* ====== Other Section ====== */
 const Other: FC = () => {
   const navigate = useNavigate();
+  const items = [
+    {
+      key: "reviews",
+      left: <Icon icon="zi-star" />,
+      right: (
+        <Box flex>
+          <Text.Header className="flex-1 font-normal">
+            Đánh giá đơn hàng
+          </Text.Header>
+          <Icon icon="zi-chevron-right" />
+        </Box>
+      ),
+    },
+    {
+      key: "contact",
+      left: <Icon icon="zi-call" />,
+      right: (
+        <Box flex>
+          <Text.Header className="flex-1 font-normal">
+            Liên hệ & góp ý
+          </Text.Header>
+          <Icon icon="zi-chevron-right" />
+        </Box>
+      ),
+    },
+  ];
+
   return (
     <Box className="m-4">
       <ListRenderer
         title="Khác"
-        items={[
-          {
-            left: <Icon icon="zi-star" />,
-            right: (
-              <Box flex>
-                <Text.Header className="flex-1 font-normal">
-                  Đánh giá đơn hàng
-                </Text.Header>
-                <Icon icon="zi-chevron-right" />
-              </Box>
-            ),
-            onClick: () => navigate("/reviews"),
-          },
-          {
-            left: <Icon icon="zi-call" />,
-            right: (
-              <Box flex>
-                <Text.Header className="flex-1 font-normal">
-                  Liên hệ & góp ý
-                </Text.Header>
-                <Icon icon="zi-chevron-right" />
-              </Box>
-            ),
-            onClick: () => navigate("/contact"),
-          },
-        ]}
+        items={items}
+        renderKey={(item) => item.key}
         renderLeft={(item) => item.left}
         renderRight={(item) => item.right}
+        onClick={(item) => {
+          if (item.key === "reviews") navigate("/reviews");
+          if (item.key === "contact") navigate("/contact");
+        }}
       />
     </Box>
   );

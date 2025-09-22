@@ -31,15 +31,9 @@ export const userInfoQuery = selector({
   },
 });
 
-export const userState = atom<User>({
+export const userState = atom<User | null>({
   key: "user",
-  default: {
-    name: "Khách hàng",
-    avatar: "https://via.placeholder.com/100",
-    tier: "bronze",
-    phone: "",
-    email: "",
-  },
+  default: null,
   effects: [
     ({ setSelf, getPromise }) => {
       getPromise(userInfoQuery).then((userInfo) => {
@@ -50,6 +44,7 @@ export const userState = atom<User>({
     },
   ],
 });
+
 
 export const categoriesState = selector<Category[]>({
   key: "categories",
