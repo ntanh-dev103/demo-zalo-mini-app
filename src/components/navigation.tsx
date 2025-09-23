@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 import { MenuItem } from "types/menu";
 import { BottomNavigation, Icon } from "zmp-ui";
 import { CartIcon } from "./cart-icon";
+import { NotificationIcon } from "./notification-icon";
 
 const tabs: Record<string, MenuItem> = {
   "/": {
@@ -12,7 +13,8 @@ const tabs: Record<string, MenuItem> = {
   },
   "/notification": {
     label: "Thông báo",
-    icon: <Icon icon="zi-notif" />,
+    icon: <NotificationIcon />,
+    activeIcon: <NotificationIcon active />,
   },
   "/cart": {
     label: "Giỏ hàng",
@@ -55,7 +57,10 @@ export const Navigation: FC = () => {
       ? "/profile" // ✅ gom tất cả route con vào tab Cá nhân
       : location.pathname
   }
-  onChange={(key) => navigate(key)}
+  onChange={(key) => {
+    console.log('Navigation changed to:', key);
+    navigate(key);
+  }}
   className="z-50"
 >
   {Object.keys(tabs).map((path: TabKeys) => (
@@ -64,6 +69,7 @@ export const Navigation: FC = () => {
       label={tabs[path].label}
       icon={tabs[path].icon}
       activeIcon={tabs[path].activeIcon}
+      onClick={() => console.log('Clicked on:', path)}
     />
   ))}
 </BottomNavigation>

@@ -15,7 +15,6 @@ import { useHandlePayment } from "hooks";
 import SubscriptionRegisterPage from "pages/user/subscription";
 import AccountPage from "pages/user/account";
 import OrdersPage from "pages/user/orders";
-import ReviewsPage from "pages/user/reviews";
 import ContactPage from "pages/user/contact";
 import UpgradePage from "pages/user/upgrade";
 
@@ -51,7 +50,6 @@ export const Layout: FC = () => {
           <Route path="/subscription" element={<SubscriptionRegisterPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/upgrade" element={<UpgradePage />} />
 

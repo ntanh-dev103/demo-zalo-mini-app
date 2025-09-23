@@ -4,13 +4,14 @@ import logo from "static/logo.png";
 import { Category } from "types/category";
 import { Product, Variant } from "types/product";
 import { Cart } from "types/cart";
-import { Notification } from "types/notification";
+// Already imported calcFinalPrice
 import { calculateDistance } from "utils/location";
 import { Store } from "types/delivery";
 import { calcFinalPrice } from "utils/product";
 import { wait } from "utils/async";
 import { getItemKey } from "types/cart";
 import { User } from "types/user";
+import { Order } from "types/order";
 import categories from "../mock/categories.json";
 export const userInfoQuery = selector({
   key: "userInfo",
@@ -45,6 +46,46 @@ export const userState = atom<User | null>({
   ],
 });
 
+
+export const orderHistoryState = atom<Order[]>({
+  key: "orderHistory",
+  default: [
+    {
+      id: "ORD001",
+      date: "2025-09-19T10:00:00Z",
+      status: "delivered",
+      total: 250000,
+      items: [
+        {
+          productId: "P1",
+          quantity: 2,
+          price: 125000,
+        }
+      ],
+      shipping: {
+        address: "123 Đường ABC, Quận 1, TP.HCM",
+        phone: "0123456789"
+      }
+    },
+    {
+      id: "ORD002",
+      date: "2025-09-18T15:30:00Z",
+      status: "shipping",
+      total: 180000,
+      items: [
+        {
+          productId: "P2",
+          quantity: 1,
+          price: 180000,
+        }
+      ],
+      shipping: {
+        address: "456 Đường XYZ, Quận 2, TP.HCM",
+        phone: "0987654321"
+      }
+    }
+  ]
+});
 
 export const categoriesState = selector<Category[]>({
   key: "categories",
@@ -98,6 +139,18 @@ export const productsByCategoryState = selectorFamily<Product[], string>({
 export const cartState = atom<Cart>({
   key: "cart",
   default: [],
+});
+
+export const addToCartState = selector({
+  key: "addToCart",
+  get: ({ get }) => get(cartState),
+  set: ({ get, set }, newValue: any) => {
+    const cart = get(cartState);
+    const item = newValue as Cart[0];
+
+    // Add to cart
+    set(cartState, [...cart, item]);
+  }
 });
 
 
@@ -298,24 +351,7 @@ export const shippingMethodState = atom<"standard" | "express">({
   default: "standard",
 });
 
-export const notificationsState = atom<Notification[]>({
-  key: "notifications",
-  default: [
-    {
-      id: 1,
-      image: logo,
-      title: "Chào bạn mới",
-      content:
-        "Cảm ơn đã sử dụng ZaUI Coffee, bạn có thể dùng ứng dụng này để tiết kiệm thời gian xây dựng",
-    },
-    {
-      id: 2,
-      image: logo,
-      title: "Giảm 50% lần đầu mua hàng",
-      content: "Nhập WELCOME để được giảm 50% giá trị đơn hàng đầu tiên order",
-    },
-  ],
-});
+// Notification state moved to state/notifications.ts
 
 export const keywordState = atom({
   key: "keyword",
@@ -511,3 +547,5 @@ export const orderNoteState = atom({
   key: "orderNote",
   default: "",
 });
+
+// Notification state moved to state/notifications.ts
