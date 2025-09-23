@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Box, Button, Header, Page, Progress, Text } from "zmp-ui";
+import { Box, Button, Header, Page, Text } from "zmp-ui";
 import { useNavigate } from "react-router";
 import { useRecoilState } from "recoil";
 import { userState } from "state";
@@ -38,9 +38,9 @@ const tiers: Tier[] = ["bronze", "silver", "gold", "diamond"];
 
 const UpgradePage: FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useRecoilState(userState);
+  const [user, setUser] = useRecoilState<User | null>(userState);
 
-  const currentTier = user.tier;
+  const currentTier = user?.tier ?? "bronze";
   const nextTier = upgradeOrder[currentTier];
 
   // Index để tính progress
