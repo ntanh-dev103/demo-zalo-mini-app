@@ -1,6 +1,9 @@
 import React, { FC, useState } from "react";
 import { Box, Header, Page, Tabs, Text, Button, Modal } from "zmp-ui";
 import { useNavigate } from "react-router";
+import { useSetRecoilState } from "recoil";
+import { notificationsState } from "state/notifications";
+import logo from "../../static/logo.png";
 
 // ==== Types ====
 type OrderStatus =
@@ -167,15 +170,51 @@ const OrdersPage: FC = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [activeStatus, setActiveStatus] = useState<OrderStatus>("cho_xac_nhan");
+  const setNotifications = useSetRecoilState(notificationsState);
 
   const countByStatus = (status: OrderStatus) =>
     orders.filter((o) => o.status === status).length;
 
+  const addOrderNotification = (order: Order, status: OrderStatus) => {
+    const statusText = {
+      cho_xac_nhan: "đang chờ xác nhận",
+      cho_lay_hang: "đang chờ lấy hàng",
+      dang_giao: "đang được giao",
+      da_giao: "đã được giao thành công",
+      da_huy: "đã bị hủy",
+      tra_hang: "đang được trả hàng"
+    };
+
+    setNotifications(prev => [{
+      id: Date.now(),
+      type: "order",
+      title: `Cập nhật đơn hàng ${order.id}`,
+      content: `Đơn hàng ${order.id} từ ${order.shop} ${statusText[status]}. Tổng giá trị: ${order.total}`,
+      timestamp: new Date().toISOString(),
+      image: logo,
+      orderId: order.id,
+      read: false,
+      orderDetails: {
+        products: order.products,
+        total: order.total,
+        shop: order.shop,
+        status: statusText[status]
+      }
+    }, ...prev]);
+  };
+
   const handleCancel = (orderId: string) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: "da_huy" } : o))
-    );
-    setActiveStatus("da_huy");
+    const canceledOrder = orders.find(o => o.id === orderId);
+    if (canceledOrder) {
+      // Update order status
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status: "da_huy" } : o))
+      );
+      setActiveStatus("da_huy");
+
+      // Add notification
+      addOrderNotification(canceledOrder, "da_huy");
+    }
   };
 
   const visibleOrders = orders.filter((o) => o.status === activeStatus);

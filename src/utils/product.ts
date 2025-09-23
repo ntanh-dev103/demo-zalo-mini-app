@@ -46,6 +46,10 @@ export function calcFinalPrice(product: Product, options?: SelectedOptions) {
   return finalPrice;
 }
 
+export function getRandomId() {
+  return `DH${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+}
+
 export function getDummyImage(filename: string) {
   return `https://stc-zmp.zadn.vn/templates/zaui-coffee/dummy/${filename}`;
 }
