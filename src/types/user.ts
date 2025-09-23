@@ -2,12 +2,13 @@
 export type Tier = "bronze" | "silver" | "gold" | "diamond";
 
 export interface User {
-  name: string;
-  avatar: string;
+  name?: string;
+  avatar?: string;
   tier: Tier;
   phone?: string;
   email?: string;
 }
+
 
 // chuẩn hoá tier từ string → Tier
 export const normalizeTier = (raw?: string): Tier | null => {

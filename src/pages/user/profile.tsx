@@ -114,18 +114,6 @@ const Other: FC = () => {
   const navigate = useNavigate();
   const items = [
     {
-      key: "reviews",
-      left: <Icon icon="zi-star" />,
-      right: (
-        <Box flex>
-          <Text.Header className="flex-1 font-normal">
-            Đánh giá đơn hàng
-          </Text.Header>
-          <Icon icon="zi-chevron-right" />
-        </Box>
-      ),
-    },
-    {
       key: "contact",
       left: <Icon icon="zi-call" />,
       right: (
