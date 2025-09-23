@@ -22,22 +22,25 @@ export const CartItems: FC = React.memo(() => {
 
   const updateQuantity = (item: CartItem, delta: number) => {
     const itemKey = getItemKey(item);
-    const newQuantity = Math.max(0, item.quantity + delta);
+    const isSelected = selectedIds.includes(itemKey);
     
-    if (newQuantity === 0) {
-      // Remove item from cart and selection if quantity becomes 0
-      setCart(prev => prev.filter(c => getItemKey(c) !== itemKey));
-      setSelectedIds(prev => prev.filter(id => id !== itemKey));
-    } else {
-      // Just update the quantity
-      setCart(prev =>
-        prev.map(c =>
-          getItemKey(c) === itemKey
-            ? { ...c, quantity: newQuantity }
+    setCart((prev) => {
+      const newCart = prev
+        .map((c) =>
+          c.product.id === item.product.id &&
+          JSON.stringify(c.options) === JSON.stringify(item.options)
+            ? { ...c, quantity: c.quantity + delta }
             : c
         )
-      );
-    }
+        .filter((c) => c.quantity > 0); // auto-remove when 0
+
+      // If the item was selected and got removed, remove it from selectedIds
+      if (isSelected && !newCart.find(c => getItemKey(c) === itemKey)) {
+        setSelectedIds(ids => ids.filter(id => id !== itemKey));
+      }
+        
+      return newCart;
+    });
   };
 
   return (

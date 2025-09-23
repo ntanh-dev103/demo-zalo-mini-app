@@ -21,23 +21,17 @@ export const CartItems: FC = React.memo(() => {
   };
 
   const updateQuantity = (item: CartItem, delta: number) => {
-    const itemKey = getItemKey(item);
-    const newQuantity = Math.max(0, item.quantity + delta);
-    
-    if (newQuantity === 0) {
-      // Remove item from cart and selection if quantity becomes 0
-      setCart(prev => prev.filter(c => getItemKey(c) !== itemKey));
-      setSelectedIds(prev => prev.filter(id => id !== itemKey));
-    } else {
-      // Just update the quantity
-      setCart(prev =>
-        prev.map(c =>
-          getItemKey(c) === itemKey
-            ? { ...c, quantity: newQuantity }
-            : c
-        )
-      );
-    }
+    setCart(
+      (prev) =>
+        prev
+          .map((c) =>
+            c.product.id === item.product.id &&
+            JSON.stringify(c.options) === JSON.stringify(item.options)
+              ? { ...c, quantity: c.quantity + delta }
+              : c
+          )
+          .filter((c) => c.quantity > 0) // auto-remove when 0
+    );
   };
 
   return (
@@ -143,7 +137,6 @@ export const CartItems: FC = React.memo(() => {
           >
             Không có sản phẩm trong giỏ hàng
           </Text>
-        </Box>
       )}
     </Box>
   );

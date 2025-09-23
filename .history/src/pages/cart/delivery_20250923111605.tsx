@@ -2,7 +2,6 @@ import { ElasticTextarea } from "components/elastic-textarea";
 import { ListRenderer } from "components/list-renderer";
 import React, { FC } from "react";
 import { Box, Icon, Text } from "zmp-ui";
-import { RequestPersonPickerPhone } from "./person-picker";
 import { Transportation } from "./transportation";
 import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -15,15 +14,9 @@ import {
 } from "state";
 import { CouponPicker } from "./coupon-picker";
 
-// Define type for list items
-interface DeliveryItem {
-  left: React.ReactNode;
-  right: React.ReactNode;
-}
-
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
-  const [shipping, setShipping] = useRecoilState(shippingMethodState);
+  const [shipping] = useRecoilState(shippingMethodState); // unused setter, you can remove if not needed
   const totals = useRecoilValue(selectedFinalTotalState);
   const coupon = useRecoilValue(couponState);
 
@@ -34,13 +27,15 @@ export const Delivery: FC = () => {
         <Text.Header className="px-4 py-3 border-b border-gray-200">
           Hình thức nhận hàng
         </Text.Header>
-        <ListRenderer<DeliveryItem>
+        <ListRenderer
           items={[
             {
+              key: "location",
               left: <Icon icon="zi-pin" className="my-auto" />,
               right: <LocationPicker />,
             },
             {
+              key: "time",
               left: <Icon icon="zi-clock-1" className="my-auto" />,
               right: (
                 <Box flex className="space-x-2">
@@ -55,14 +50,17 @@ export const Delivery: FC = () => {
               ),
             },
             {
+              key: "coupon",
               left: <Icon icon="zi-exclamation" className="my-auto" />,
               right: <CouponPicker />,
             },
             {
+              key: "transportation",
               left: <Icon icon="zi-location" className="my-auto" />,
               right: <Transportation />,
             },
             {
+              key: "note",
               left: <Icon icon="zi-note" className="my-auto" />,
               right: (
                 <Box flex>
@@ -78,6 +76,7 @@ export const Delivery: FC = () => {
             },
           ]}
           limit={6}
+          renderKey={(item) => item.key}
           renderLeft={(item) => item.left}
           renderRight={(item) => item.right}
         />

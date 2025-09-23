@@ -38,9 +38,7 @@ export const CartPreview: FC = () => {
         disabled={!quantity}
         fullWidth
         onClick={() => pay(total)}
-        className="rounded-xl bg-blue-500 text-white py-4 text-lg font-semibold shadow-lg 
-          active:scale-95 transition flex items-center justify-center
-          hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="rounded-xl bg-blue-400 text-white py-4 text-lg font-semibold shadow-lg active:scale-95 transition flex items-center justify-center"
       >
         Đặt hàng
       </Button>

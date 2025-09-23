@@ -1,6 +1,6 @@
 import { ElasticTextarea } from "components/elastic-textarea";
 import { ListRenderer } from "components/list-renderer";
-import React, { FC } from "react";
+import React, { FC, Suspense } from "react";
 import { Box, Icon, Text } from "zmp-ui";
 import { RequestPersonPickerPhone } from "./person-picker";
 import { Transportation } from "./transportation";
@@ -15,12 +15,6 @@ import {
 } from "state";
 import { CouponPicker } from "./coupon-picker";
 
-// Define type for list items
-interface DeliveryItem {
-  left: React.ReactNode;
-  right: React.ReactNode;
-}
-
 export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
@@ -34,7 +28,7 @@ export const Delivery: FC = () => {
         <Text.Header className="px-4 py-3 border-b border-gray-200">
           Hình thức nhận hàng
         </Text.Header>
-        <ListRenderer<DeliveryItem>
+        <ListRenderer
           items={[
             {
               left: <Icon icon="zi-pin" className="my-auto" />,

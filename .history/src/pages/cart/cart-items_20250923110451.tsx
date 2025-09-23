@@ -6,7 +6,7 @@ import { ProductPicker } from "components/product/picker";
 import React, { FC, useState } from "react";
 import { useRecoilState } from "recoil";
 import { cartState, selectedCartItemsState } from "state";
-import { CartItem, getItemKey } from "types/cart";
+import { CartItem } from "types/cart";
 import { Box, Text, Button } from "zmp-ui";
 
 export const CartItems: FC = React.memo(() => {
@@ -21,23 +21,17 @@ export const CartItems: FC = React.memo(() => {
   };
 
   const updateQuantity = (item: CartItem, delta: number) => {
-    const itemKey = getItemKey(item);
-    const newQuantity = Math.max(0, item.quantity + delta);
-    
-    if (newQuantity === 0) {
-      // Remove item from cart and selection if quantity becomes 0
-      setCart(prev => prev.filter(c => getItemKey(c) !== itemKey));
-      setSelectedIds(prev => prev.filter(id => id !== itemKey));
-    } else {
-      // Just update the quantity
-      setCart(prev =>
-        prev.map(c =>
-          getItemKey(c) === itemKey
-            ? { ...c, quantity: newQuantity }
-            : c
-        )
-      );
-    }
+    setCart(
+      (prev) =>
+        prev
+          .map((c) =>
+            c.product.id === item.product.id &&
+            JSON.stringify(c.options) === JSON.stringify(item.options)
+              ? { ...c, quantity: c.quantity + delta }
+              : c
+          )
+          .filter((c) => c.quantity > 0) // auto-remove when 0
+    );
   };
 
   return (
@@ -50,9 +44,14 @@ export const CartItems: FC = React.memo(() => {
               limit={5}
               // disable opening product page
               onClick={() => {}}
-              renderKey={(item) => getItemKey(item)}
+              renderKey={({ product, options }) =>
+                JSON.stringify({ product: product.id, options })
+              }
               renderLeft={(item) => {
-                const key = getItemKey(item);
+                const key = JSON.stringify({
+                  product: item.product.id,
+                  options: item.options,
+                });
                 return (
                   <Box flex className="items-start space-x-3">
                     <input
@@ -97,9 +96,7 @@ export const CartItems: FC = React.memo(() => {
                     <Box flex className="items-center space-x-2">
                       <Button
                         size="small"
-                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center
-                          bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-600
-                          transition-colors duration-200"
+                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           updateQuantity(item, -1);
@@ -115,9 +112,7 @@ export const CartItems: FC = React.memo(() => {
                       </Text>
                       <Button
                         size="small"
-                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center
-                          bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-600
-                          transition-colors duration-200"
+                        className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           updateQuantity(item, +1);
@@ -143,6 +138,14 @@ export const CartItems: FC = React.memo(() => {
           >
             Không có sản phẩm trong giỏ hàng
           </Text>
+          <Button
+            className="mt-4"
+            onClick={() => {
+              console.log("Navigate to products");
+            }}
+          >
+            Duyệt sản phẩm
+          </Button>
         </Box>
       )}
     </Box>
