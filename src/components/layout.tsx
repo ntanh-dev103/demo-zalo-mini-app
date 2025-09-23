@@ -6,12 +6,20 @@ import HomePage from "pages/index";
 import CategoryPage from "pages/category";
 import CartPage from "pages/cart";
 import NotificationPage from "pages/notification";
-import ProfilePage from "pages/profile";
+import ProfilePage from "pages/user/profile";
 import SearchPage from "pages/search";
 import CheckoutResultPage from "pages/result";
 import { getSystemInfo } from "zmp-sdk";
 import { ScrollRestoration } from "./scroll-restoration";
 import { useHandlePayment } from "hooks";
+import SubscriptionRegisterPage from "pages/user/subscription";
+import AccountPage from "pages/user/account";
+import OrdersPage from "pages/user/orders";
+import ReviewsPage from "pages/user/reviews";
+import ContactPage from "pages/user/contact";
+import UpgradePage from "pages/user/upgrade";
+
+
 
 if (import.meta.env.DEV) {
   document.body.style.setProperty("--zaui-safe-area-inset-top", "24px");
@@ -40,6 +48,14 @@ export const Layout: FC = () => {
           <Route path="/cart" element={<CartPage />}></Route>
           <Route path="/profile" element={<ProfilePage />}></Route>
           <Route path="/result" element={<CheckoutResultPage />}></Route>
+          <Route path="/subscription" element={<SubscriptionRegisterPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/upgrade" element={<UpgradePage />} />
+
+
         </Routes>
       </Box>
       <Navigation />

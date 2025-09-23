@@ -10,7 +10,6 @@ interface ListRendererProps<T> {
   renderKey?: (item: T) => string;
   onClick?: (item: T) => void;
   noDivider?: boolean;
-  itemClassName?: string; // Added for per-item styling
 }
 
 export function ListRenderer<T>({
@@ -22,7 +21,6 @@ export function ListRenderer<T>({
   renderKey,
   onClick,
   noDivider,
-  itemClassName,
 }: ListRendererProps<T>) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const collapsedItems = useMemo(() => {
@@ -37,7 +35,7 @@ export function ListRenderer<T>({
           <div
             key={renderKey ? renderKey(item) : i}
             onClick={() => onClick?.(item)}
-            className={`flex space-x-4 p-4 last:pb-0 ${itemClassName || ""}`}
+            className="flex space-x-4 p-4 last:pb-0"
           >
             {renderLeft(item)}
             <Box className="flex-1 min-w-0 relative">

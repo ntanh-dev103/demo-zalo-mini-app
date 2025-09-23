@@ -4,7 +4,7 @@ import React, { FC, ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSetRecoilState } from "recoil";
 import { cartState } from "state";
-import { SelectedOptions } from "types/cart";
+import { SelectedOptions, getItemKey } from "types/cart";
 import { Product } from "types/product";
 import { isIdentical } from "utils/product";
 import { Box, Button, Text, Input } from "zmp-ui";
@@ -20,8 +20,6 @@ export interface ProductPickerProps {
   };
   children: (methods: { open: () => void; close: () => void }) => ReactNode;
 }
-
-type Review = { user: string; rating: number; comment: string };
 
 function getDefaultOptions(product?: Product) {
   if (product && product.variants) {
@@ -45,104 +43,72 @@ export const ProductPicker: FC<ProductPickerProps> = ({
   const [options, setOptions] = useState<SelectedOptions>(
     selected ? selected.options : getDefaultOptions(product)
   );
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(selected ? selected.quantity : 1);
   const setCart = useSetRecoilState(cartState);
 
-  // --- Reviews state ---
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [userName, setUserName] = useState("");
-
-  // Load persisted reviews
-  useEffect(() => {
-    if (product?.id) {
-      const saved = localStorage.getItem(`reviews_${product.id}`);
-      if (saved) setReviews(JSON.parse(saved));
-    }
-  }, [product?.id]);
-
-  // Persist reviews
-  useEffect(() => {
-    if (product?.id) {
-      localStorage.setItem(`reviews_${product.id}`, JSON.stringify(reviews));
-    }
-  }, [reviews, product?.id]);
-
-  useEffect(() => {
-    if (selected) {
-      setOptions(selected.options);
-      setQuantity(selected.quantity);
-    }
-  }, [selected]);
-
   const addToCart = () => {
-    if (product) {
-      setCart((cart) => {
-        let res = [...cart];
-        if (selected) {
-          const editing = cart.find(
-            (item) =>
-              item.product.id === product.id &&
-              isIdentical(item.options, selected.options)
-          )!;
-          if (quantity === 0) {
-            res.splice(cart.indexOf(editing), 1);
-          } else {
-            const existed = cart.find(
-              (item, i) =>
-                i !== cart.indexOf(editing) &&
-                item.product.id === product.id &&
-                isIdentical(item.options, options)
-            )!;
-            res.splice(cart.indexOf(editing), 1, {
-              ...editing,
-              options,
-              quantity: existed ? existed.quantity + quantity : quantity,
-            });
-            if (existed) {
-              res.splice(cart.indexOf(existed), 1);
-            }
-          }
+    if (!product) return;
+
+    setCart((cart) => {
+      const updatedCart = [...cart];
+      const newItem = {
+        product,
+        options,
+        quantity,
+      };
+
+      // Find existing item
+      const existingIndex = cart.findIndex((item) => 
+        item.product.id === product.id && 
+        JSON.stringify(item.options) === JSON.stringify(options)
+      );
+
+      if (existingIndex !== -1) {
+        if (quantity > 0) {
+          // Update existing item
+          updatedCart[existingIndex] = newItem;
         } else {
-          const existed = cart.find(
-            (item) =>
-              item.product.id === product.id &&
-              isIdentical(item.options, options)
-          );
-          if (existed) {
-            res.splice(cart.indexOf(existed), 1, {
-              ...existed,
-              quantity: existed.quantity + quantity,
-            });
-          } else {
-            res = res.concat({
-              product,
-              options,
-              quantity,
-            });
-          }
+          // Remove item if quantity is 0
+          updatedCart.splice(existingIndex, 1);
         }
-        return res;
-      });
-    }
+      } else if (quantity > 0) {
+        // Add new item
+        updatedCart.push(newItem);
+      }
+
+      return updatedCart;
+    });
+
     setVisible(false);
   };
 
-  const submitReview = () => {
-    if (!userName.trim() || !comment.trim() || !rating) return;
-    setReviews([...reviews, { user: userName, rating, comment }]);
-    setUserName("");
-    setComment("");
-    setRating(0);
-  };
+  // Reset quantity and options when product changes
+  useEffect(() => {
+    if (product && !selected) {
+      setOptions(getDefaultOptions(product));
+      setQuantity(1);
+    }
+  }, [product, selected]);
 
-  const averageRating =
-    reviews.length > 0
-      ? (
-          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-        ).toFixed(1)
-      : "0";
+// --- Review state ---
+const [reviews, setReviews] = useState<{ user: string; rating: number; comment: string }[]>([]);
+const [rating, setRating] = useState(0);
+const [comment, setComment] = useState("");
+const [userName, setUserName] = useState("");
+
+// --- Submit review ---
+const submitReview = () => {
+  if (!rating || !comment.trim() || !userName.trim()) return;
+  setReviews([...reviews, { user: userName.trim(), rating, comment }]);
+  setRating(0);
+  setComment("");
+  setUserName("");
+};
+
+// --- Overall rating ---
+const avgRating = reviews.length
+  ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+  : null;
 
   return (
     <>
@@ -151,7 +117,11 @@ export const ProductPicker: FC<ProductPickerProps> = ({
         close: () => setVisible(false),
       })}
       {createPortal(
-        <Sheet visible={visible} onClose={() => setVisible(false)}>
+        <Sheet
+          visible={visible}
+          onClose={() => setVisible(false)}
+          autoHeight={false}
+        >
           {product && (
             <Box className="max-h-[80vh] overflow-y-auto" p={4}>
               {/* Product Image */}
@@ -174,7 +144,7 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                     dangerouslySetInnerHTML={{
                       __html: product.description ?? "",
                     }}
-                  />
+                  ></div>
                 </Text>
               </Box>
 
@@ -188,8 +158,8 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                         variant={variant}
                         value={options[variant.id] as string}
                         onChange={(selectedOption) =>
-                          setOptions((prev) => ({
-                            ...prev,
+                          setOptions((prevOptions) => ({
+                            ...prevOptions,
                             [variant.id]: selectedOption,
                           }))
                         }
@@ -201,8 +171,8 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                         variant={variant}
                         value={options[variant.id] as string[]}
                         onChange={(selectedOption) =>
-                          setOptions((prev) => ({
-                            ...prev,
+                          setOptions((prevOptions) => ({
+                            ...prevOptions,
                             [variant.id]: selectedOption,
                           }))
                         }
@@ -211,28 +181,36 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                   )}
                 <QuantityPicker value={quantity} onChange={setQuantity} />
 
-                <Button
-                  variant="primary"
-                  fullWidth
-                  disabled={!quantity}
-                  onClick={addToCart}
-                >
-                  {selected
-                    ? quantity > 0
-                      ? "Cập nhật giỏ hàng"
-                      : "Xoá"
-                    : "Thêm vào giỏ hàng"}
-                </Button>
+                {/* Cart Button */}
+                {selected ? (
+                  <Button
+                    variant={quantity > 0 ? "primary" : "secondary"}
+                    type={quantity > 0 ? "highlight" : "neutral"}
+                    fullWidth
+                    onClick={addToCart}
+                  >
+                    {quantity > 0
+                      ? selected
+                        ? "Cập nhật giỏ hàng"
+                        : "Thêm vào giỏ hàng"
+                      : "Xoá"}
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={!quantity}
+                    variant="primary"
+                    type="highlight"
+                    fullWidth
+                    onClick={addToCart}
+                  >
+                    Thêm vào giỏ hàng
+                  </Button>
+                )}
               </Box>
 
               {/* --- Reviews Section --- */}
-              <Box className="space-y-3 pt-6">
-                <Text.Title className="text-lg">
-                  Đánh giá ({reviews.length})
-                </Text.Title>
-                <Text className="text-yellow-600 font-semibold">
-                  ⭐ {averageRating}/5
-                </Text>
+              <Box className="space-y-3 pt-5">
+                <Text.Title className="text-lg">Đánh giá</Text.Title>
 
                 {/* Existing Reviews */}
                 {reviews.length === 0 ? (
@@ -240,7 +218,6 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                 ) : (
                   reviews.map((r, i) => (
                     <Box key={i} className="border-b pb-2">
-                      <Text className="font-semibold">{r.user}</Text>
                       <Text>
                         {"⭐".repeat(r.rating)}{" "}
                         <span className="text-gray">({r.rating}/5)</span>
@@ -251,32 +228,27 @@ export const ProductPicker: FC<ProductPickerProps> = ({
                 )}
 
                 {/* Add Review */}
-                <Box className="space-y-2 border-t pt-3">
+                <Box className="space-y-2">
                   <Text className="font-semibold">Thêm đánh giá của bạn</Text>
-                  <Input
-                    placeholder="Tên của bạn"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                  />
-                  <Input.TextArea
-                    placeholder="Nhập nhận xét..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <Box className="flex space-x-1">
+                  <Box className="flex space-x-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Text
                         key={star}
                         className={`cursor-pointer text-2xl ${
-                          star <= rating ? "text-yellow-500" : "text-gray-400"
-                        }`}
+                          star <= rating ? "text-yellow-500" : "text-gray"
+                        }hover:scale-110`}
                         onClick={() => setRating(star)}
                       >
                         ⭐
                       </Text>
                     ))}
                   </Box>
-                  <Button variant="primary" onClick={submitReview}>
+                  <Input.TextArea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Nhập nhận xét của bạn..."
+                  />
+                  <Button onClick={submitReview} variant="primary">
                     Gửi đánh giá
                   </Button>
                 </Box>
