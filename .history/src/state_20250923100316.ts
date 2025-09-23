@@ -209,7 +209,12 @@ export const selectedSubtotalState = selector({
     const selectedIds = get(selectedCartItemsState);
 
     return cart.reduce((total, item) => {
-      const key = getItemKey(item);
+      const key = JSON.stringify({
+  product: item.product.id,
+  options: Array.isArray(item.options)
+    ? item.options.map((o) => (typeof o === "string" ? o : o.id))
+    : [item.options], // fallback if it's a single string
+});
       if (selectedIds.includes(key)) {
         return (
           total +
@@ -261,7 +266,13 @@ export const selectedFinalTotalState = selector({
 
     // subtotal (only selected items)
     const subtotal = cart.reduce((total, item) => {
-      const key = getItemKey(item);
+      const key = JSON.stringify({
+        product: item.product.id,
+        options: Array.isArray(item.options)
+          ? item.options.map((o) => (typeof o === "string" ? o : o.id))
+          : [item.options],
+        quantity: item.quantity,
+      });
 
       if (selectedIds.includes(key)) {
         return (

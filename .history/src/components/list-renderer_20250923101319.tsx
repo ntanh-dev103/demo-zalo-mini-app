@@ -24,10 +24,8 @@ export function ListRenderer<T>({
   noDivider,
   itemClassName,
 }: ListRendererProps<T>) {
-  console.log('ListRenderer props:', { title, items, limit, noDivider, itemClassName });
   const [isCollapsed, setIsCollapsed] = useState(true);
   const collapsedItems = useMemo(() => {
-    console.log('Computing collapsedItems:', { items, limit });
     return items.slice(0, limit);
   }, [items]);
 
@@ -39,7 +37,7 @@ export function ListRenderer<T>({
           <div
             key={renderKey ? renderKey(item) : i}
             onClick={() => onClick?.(item)}
-            className={`flex space-x-4 p-4 last:pb-0 ${itemClassName || ""}`}
+            className={`flex space-x-4 p-4 last:pb-0 ${itemClassName || ''}`}
           >
             {renderLeft(item)}
             <Box className="flex-1 min-w-0 relative">

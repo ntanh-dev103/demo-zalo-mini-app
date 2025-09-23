@@ -209,7 +209,12 @@ export const selectedSubtotalState = selector({
     const selectedIds = get(selectedCartItemsState);
 
     return cart.reduce((total, item) => {
-      const key = getItemKey(item);
+      const key = JSON.stringify({
+  product: item.product.id,
+  options: Array.isArray(item.options)
+    ? item.options.map((o) => (typeof o === "string" ? o : o.id))
+    : [item.options], // fallback if it's a single string
+});
       if (selectedIds.includes(key)) {
         return (
           total +
@@ -247,6 +252,10 @@ export const selectedTotalPriceState = selector({
         return total + item.quantity * calcFinalPrice(item.product, item.options);
       }
       return total;
+    const selectedItems = get(selectedCartItemsState);
+    return selectedItems.reduce((total, item) => {
+      const price = calcFinalPrice(item.product, item.options);
+      return total + (price * item.quantity);
     }, 0);
   },
 });
@@ -261,7 +270,13 @@ export const selectedFinalTotalState = selector({
 
     // subtotal (only selected items)
     const subtotal = cart.reduce((total, item) => {
-      const key = getItemKey(item);
+      const key = JSON.stringify({
+        product: item.product.id,
+        options: Array.isArray(item.options)
+          ? item.options.map((o) => (typeof o === "string" ? o : o.id))
+          : [item.options],
+        quantity: item.quantity,
+      });
 
       if (selectedIds.includes(key)) {
         return (
@@ -275,6 +290,14 @@ export const selectedFinalTotalState = selector({
     // shipping fee
     const shippingFee = shipping === "express" ? 30000 : 0;
     let discount = 0;
+    if (coupon) {
+      if (coupon.discountType === "percent") {
+        discount = (subtotal * coupon.value) / 100;
+      } else {
+        discount = coupon.value;
+      }
+    }
+
     if (coupon && subtotal > 0) {
       discount = coupon.discountType === "percent" 
         ? (subtotal * coupon.value) / 100 

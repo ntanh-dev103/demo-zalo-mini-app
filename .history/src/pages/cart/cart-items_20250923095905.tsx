@@ -1,3 +1,4 @@
+
 import { FinalPrice } from "components/display/final-price";
 import { DisplayPrice } from "components/display/price";
 import { DisplaySelectedOptions } from "components/display/selected-options";
@@ -6,7 +7,7 @@ import { ProductPicker } from "components/product/picker";
 import React, { FC, useState } from "react";
 import { useRecoilState } from "recoil";
 import { cartState, selectedCartItemsState } from "state";
-import { CartItem, getItemKey } from "types/cart";
+import { CartItem } from "types/cart";
 import { Box, Text, Button } from "zmp-ui";
 
 export const CartItems: FC = React.memo(() => {
@@ -17,11 +18,26 @@ export const CartItems: FC = React.memo(() => {
   );
 
   const toggleSelect = (item: CartItem) => {
+    const itemKey = JSON.stringify({
+      product: item.product.id,
+      options: item.options,
+    });
+
     setSelectedItems((prev) => {
-      const itemKey = getItemKey(item);
-      return prev.includes(itemKey)
-        ? prev.filter((key) => key !== itemKey)
-        : [...prev, itemKey];
+      const exists = prev.some(
+        (i) =>
+          i.product.id === item.product.id &&
+          JSON.stringify(i.options) === JSON.stringify(item.options)
+      );
+      return exists
+        ? prev.filter(
+            (i) =>
+              !(
+                i.product.id === item.product.id &&
+                JSON.stringify(i.options) === JSON.stringify(item.options)
+              )
+          )
+        : [...prev, item];
     });
   };
 
@@ -30,7 +46,8 @@ export const CartItems: FC = React.memo(() => {
       (prev) =>
         prev
           .map((c) =>
-            getItemKey(c) === getItemKey(item)
+            c.product.id === item.product.id &&
+            JSON.stringify(c.options) === JSON.stringify(item.options)
               ? { ...c, quantity: c.quantity + delta }
               : c
           )
@@ -48,14 +65,25 @@ export const CartItems: FC = React.memo(() => {
               limit={5}
               // disable opening product page
               onClick={() => {}}
-              renderKey={(item) => getItemKey(item)}
+              renderKey={({ product, options, quantity }) =>
+                JSON.stringify({ product: product.id, options, quantity })
+              }
               renderLeft={(item) => {
-                const key = getItemKey(item);
+                const key = JSON.stringify({
+                  product: item.product.id,
+                  options: item.options,
+                  quantity: item.quantity,
+                });
                 return (
                   <Box flex className="items-start space-x-3">
                     <input
                       type="checkbox"
-                      checked={selectedItems.includes(getItemKey(item))}
+                      checked={selectedItems.some(
+                        (i) =>
+                          i.product.id === item.product.id &&
+                          JSON.stringify(i.options) ===
+                            JSON.stringify(item.options)
+                      )}
                       onChange={(e) => {
                         e.stopPropagation();
                         toggleSelect(item);
@@ -152,4 +180,5 @@ export const CartItems: FC = React.memo(() => {
       )}
     </Box>
   );
+  }
 });

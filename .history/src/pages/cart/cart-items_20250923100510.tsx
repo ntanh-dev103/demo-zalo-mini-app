@@ -1,3 +1,4 @@
+
 import { FinalPrice } from "components/display/final-price";
 import { DisplayPrice } from "components/display/price";
 import { DisplaySelectedOptions } from "components/display/selected-options";
@@ -26,15 +27,14 @@ export const CartItems: FC = React.memo(() => {
   };
 
   const updateQuantity = (item: CartItem, delta: number) => {
-    setCart(
-      (prev) =>
-        prev
-          .map((c) =>
-            getItemKey(c) === getItemKey(item)
-              ? { ...c, quantity: c.quantity + delta }
-              : c
-          )
-          .filter((c) => c.quantity > 0) // auto-remove when 0
+    setCart((prev) =>
+      prev
+        .map((c) =>
+          getItemKey(c) === getItemKey(item)
+            ? { ...c, quantity: c.quantity + delta }
+            : c
+        )
+        .filter((c) => c.quantity > 0) // auto-remove when 0
     );
   };
 
@@ -50,7 +50,11 @@ export const CartItems: FC = React.memo(() => {
               onClick={() => {}}
               renderKey={(item) => getItemKey(item)}
               renderLeft={(item) => {
-                const key = getItemKey(item);
+                const key = JSON.stringify({
+                  product: item.product.id,
+                  options: item.options,
+                  quantity: item.quantity,
+                });
                 return (
                   <Box flex className="items-start space-x-3">
                     <input

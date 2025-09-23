@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Divider } from "components/divider";
-import { Header, Page, Box, Text } from "zmp-ui";
+import { Header, Page } from "zmp-ui";
 import { CartItems } from "./cart-items";
 import { CartPreview } from "./preview";
 import { TermsAndPolicies } from "./term-and-policies";

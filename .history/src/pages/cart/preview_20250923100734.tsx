@@ -1,11 +1,7 @@
 import { DisplayPrice } from "components/display/price";
 import React, { FC } from "react";
 import { useRecoilValue } from "recoil";
-import {
-  selectedFinalTotalState,
-  selectedCartItemsState,
-  cartState,
-} from "state";
+import { selectedFinalTotalState, selectedCartItemsState, cartState } from "state";
 import pay from "utils/product";
 import { Box, Button, Text } from "zmp-ui";
 import { getItemKey } from "types/cart";
@@ -15,9 +11,8 @@ export const CartPreview: FC = () => {
   const selectedKeys = useRecoilValue(selectedCartItemsState);
   const cart = useRecoilValue(cartState);
 
-  const quantity = cart.reduce(
-    (sum, item) =>
-      selectedKeys.includes(getItemKey(item)) ? sum + item.quantity : sum,
+  const quantity = cart.reduce((sum, item) => 
+    selectedKeys.includes(getItemKey(item)) ? sum + item.quantity : sum, 
     0
   );
 

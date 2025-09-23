@@ -19,39 +19,17 @@ interface DeliveryItem {
   right: JSX.Element;
 }
 
-import { ErrorBoundary } from "components/error-boundary";
-
-const DeliveryContent: FC = () => {
-  console.log("DeliveryContent starting render");
-  
+export const Delivery: FC = () => {
   const [note, setNote] = useRecoilState(orderNoteState);
-  console.log("Note state loaded:", note);
-  
   const [shipping, setShipping] = useRecoilState(shippingMethodState);
-  console.log("Shipping state loaded:", shipping);
-  
   const totals = useRecoilValue(selectedFinalTotalState);
-  console.log("Totals loaded:", totals);
-  
   const coupon = useRecoilValue(couponState);
-  console.log("Coupon loaded:", coupon);
-  
   const [timeVisible, setTimeVisible] = useState(false);
   const [couponVisible, setCouponVisible] = useState(false);
   const [noteVisible, setNoteVisible] = useState(false);
 
-  console.log("Delivery rendered with state:", {
-    note,
-    shipping,
-    totals,
-    coupon,
-    timeVisible,
-    couponVisible,
-    noteVisible
-  });
+  console.log("Delivery rendered"); // Debug log for white screen
 
-  console.log("DeliveryContent about to render JSX");
-  
   return (
     <Box className="px-4 pt-4 pb-24 space-y-6 border-t border-primary min-h-fit">
       {/* Delivery method section */}
@@ -167,19 +145,5 @@ const DeliveryContent: FC = () => {
         </Text>
       </Box>
     </Box>
-  );
-};
-
-export const Delivery: FC = () => {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={
-        <Box className="p-4">
-          <Text>Loading...</Text>
-        </Box>
-      }>
-        <DeliveryContent />
-      </Suspense>
-    </ErrorBoundary>
   );
 };

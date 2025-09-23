@@ -24,10 +24,8 @@ export function ListRenderer<T>({
   noDivider,
   itemClassName,
 }: ListRendererProps<T>) {
-  console.log('ListRenderer props:', { title, items, limit, noDivider, itemClassName });
   const [isCollapsed, setIsCollapsed] = useState(true);
   const collapsedItems = useMemo(() => {
-    console.log('Computing collapsedItems:', { items, limit });
     return items.slice(0, limit);
   }, [items]);
 

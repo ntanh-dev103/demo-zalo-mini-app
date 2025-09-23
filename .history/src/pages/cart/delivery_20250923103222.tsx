@@ -168,18 +168,13 @@ const DeliveryContent: FC = () => {
       </Box>
     </Box>
   );
-};
-
-export const Delivery: FC = () => {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={
-        <Box className="p-4">
-          <Text>Loading...</Text>
-        </Box>
-      }>
-        <DeliveryContent />
-      </Suspense>
-    </ErrorBoundary>
-  );
+  } catch (error) {
+    console.error("Error rendering Delivery:", error);
+    return (
+      <Box className="p-4 text-red-500">
+        <Text>An error occurred</Text>
+        <pre>{error instanceof Error ? error.message : String(error)}</pre>
+      </Box>
+    );
+  }
 };
