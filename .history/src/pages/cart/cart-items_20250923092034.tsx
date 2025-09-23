@@ -1,0 +1,82 @@
+
+import { FinalPrice } from "components/display/final-price";
+import { DisplayPrice } from "components/display/price";
+import { DisplaySelectedOptions } from "components/display/selected-options";
+import { ListRenderer } from "components/list-renderer";
+              renderLeft={(item) => (
+                <Box flex className="items-start space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(
+                      JSON.stringify({ product: item.product.id, options: item.options })
+                    )}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      toggleSelect(item);
+                    }}
+                    className="
+                      w-5 h-5 rounded-[4px] border border-gray-400 
+                      appearance-none cursor-pointer transition-all duration-200
+                      checked:bg-blue-500 checked:border-blue-500 
+                      checked:shadow-[0_0_0_2px_white]
+                    "
+                  />
+                  <img
+                    className="w-16 h-16 object-cover rounded-md border mr-3"
+                    src={item.product.image}
+                    alt={item.product.name}
+                  />
+                </Box>
+              )}
+                                        renderRight={(item) => (
+                                          <Box flex className="flex-1 justify-between items-start">
+                                            <Box className="space-y-1 flex-1 pr-4">
+                                              <Text size="xSmall" className="font-medium text-primary">
+                                                {item.product.name}
+                                              </Text>
+                                              <Text size="xxSmall" className="text-gray">
+                                                <DisplaySelectedOptions options={item.options}>
+                                                  {item.product}
+                                                </DisplaySelectedOptions>
+                                              </Text>
+                                            </Box>
+                                            <Box flex className="items-center space-x-3">
+                                              <Box flex className="items-center space-x-2">
+                                                <Button
+                                                  size="small"
+                                                  className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    updateQuantity(item, -1);
+                                                  }}
+                                                >
+                                                  -
+                                                </Button>
+                                                <Text className="text-primary font-medium" size="small">
+                                                  {item.quantity}
+                                                </Text>
+                                                <Button
+                                                  size="small"
+                                                  className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    updateQuantity(item, +1);
+                                                  }}
+                                                >
+                                                  +
+                                                </Button>
+                                              </Box>
+                                              <Box flex className="flex-col items-end">
+                                                <Text
+                                                  className="font-semibold text-blue-600 whitespace-nowrap"
+                                                  size="xxSmall"
+                                                >
+                                                  <FinalPrice options={item.options} showOriginal={false}>
+                                                    {item.product}
+                                                  </FinalPrice>
+                                                </Text>
+                                              </Box>
+                                            </Box>
+                                          </Box>
+                                        )}
+                    <img
