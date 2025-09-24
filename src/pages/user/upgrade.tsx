@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Box, Button, Header, Page, Text } from "zmp-ui";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userState } from "state";
 import { Tier, User, tierLabels } from "types/user";
@@ -40,11 +40,12 @@ const UpgradePage: FC = () => {
   const navigate = useNavigate();
   const [user, setUser] = useRecoilState<User | null>(userState);
 
-  const currentTier = user?.tier ?? "bronze";
+  // Ép kiểu Tier cho currentTier (nếu user?.tier undefined thì mặc định bronze)
+  const currentTier = (user?.tier ?? "bronze") as Tier;
   const nextTier = upgradeOrder[currentTier];
 
   // Index để tính progress
-  const currentIndex = tiers.indexOf(currentTier);
+  const currentIndex = Math.max(0, tiers.indexOf(currentTier));
   const progress = ((currentIndex + 1) / tiers.length) * 100;
 
   const handleUpgrade = () => {
@@ -53,11 +54,20 @@ const UpgradePage: FC = () => {
       return;
     }
 
-    // cập nhật state user với tier mới
-    setUser({
-      ...user,
-      tier: nextTier,
-    });
+    // Nếu chưa có user thì tạo guest user tạm và gán tier mới
+    if (!user) {
+      const guestUser: User = {
+        id: `guest_${Math.random().toString(36).slice(2, 9)}`,
+        name: "Khách hàng",
+        avatar: "https://via.placeholder.com/100",
+        tier: nextTier,
+        role: "customer",
+      };
+      setUser(guestUser);
+    } else {
+      // Dùng updater để an toàn (tránh race condition)
+      setUser((prev) => (prev ? { ...prev, tier: nextTier } : prev));
+    }
 
     alert(`🎉 Chúc mừng! Bạn đã được nâng lên hạng ${tierLabels[nextTier]}`);
     navigate("/profile");
@@ -86,7 +96,6 @@ const UpgradePage: FC = () => {
             </Text>
           </Box>
         </Box>
-
 
         {/* Danh sách quyền lợi các hạng */}
         <Box className="space-y-4">

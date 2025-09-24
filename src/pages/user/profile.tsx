@@ -3,7 +3,7 @@ import { Box, Header, Icon, Page, Text, Avatar, Button } from "zmp-ui";
 import subscriptionDecor from "static/subscription-decor.svg";
 import { ListRenderer } from "components/list-renderer";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "state";
 import { normalizeTier, tierColors, tierLabels, User } from "types/user";
 
@@ -12,13 +12,30 @@ const UserInfo: FC = () => {
   const user = useRecoilValue<User | null>(userState);
   const tierKey = normalizeTier(user?.tier);
 
+  if (!user) {
+    return (
+      <Box className="flex flex-col items-center p-6">
+        <Avatar src="https://via.placeholder.com/100" size={80} />
+        <Text.Title className="mt-3">Khách hàng</Text.Title>
+        <Button
+  className="mt-3"
+  type="highlight"
+  onClick={() => console.log("Đi đến đăng nhập")}
+>
+  Đăng nhập
+</Button>
+
+      </Box>
+    );
+  }
+
   return (
     <Box className="flex flex-col items-center p-6">
       <Avatar
-        src={user?.avatar ?? "https://via.placeholder.com/100"}
+        src={user.avatar ?? "https://via.placeholder.com/100"}
         size={80}
       />
-      <Text.Title className="mt-3">{user?.name ?? "Khách hàng"}</Text.Title>
+      <Text.Title className="mt-3">{user.name}</Text.Title>
       {tierKey && (
         <Text className={`mt-1 font-medium ${tierColors[tierKey]}`}>
           Hạng: {tierLabels[tierKey]}
@@ -147,9 +164,11 @@ const Other: FC = () => {
 /* ====== Profile Page ====== */
 const ProfilePage: FC = () => {
   const navigate = useNavigate();
+  const user = useRecoilValue<User | null>(userState);
 
   const handleLogout = () => {
     console.log("User logged out");
+    // TODO: setUser(null) bằng useSetRecoilState để reset userState
     navigate("/");
   };
 
@@ -157,16 +176,72 @@ const ProfilePage: FC = () => {
     <Page className="bg-blue-50">
       <Header showBackIcon={false} title="Trang cá nhân" />
       <UserInfo />
-      <Subscription />
-      <Personal />
-      <Other />
-      <Box className="m-4">
-        <Button fullWidth type="danger" onClick={handleLogout}>
-          Đăng xuất
-        </Button>
-      </Box>
+
+      {/* Nếu chưa đăng nhập → hiển thị nút đăng nhập */}
+      {!user && (
+        <Box className="m-4">
+          <Button
+            fullWidth
+            type="highlight"
+            onClick={() => navigate("/login")}
+          >
+            Đăng nhập
+          </Button>
+        </Box>
+      )}
+
+      {/* Nếu đã đăng nhập → chia role */}
+      {user && (
+        <>
+          <Subscription />
+          <Personal />
+          <Other />
+
+          {/* Quyền theo role */}
+          {user.role === "admin" && (
+            <Box className="m-4">
+              <Button fullWidth type="highlight" onClick={() => navigate("/admin")}>
+                Quản trị hệ thống
+              </Button>
+            </Box>
+          )}
+
+          {user.role === "staff" && (
+            <Box className="m-4">
+              <Button fullWidth type="highlight" onClick={() => navigate("/staff")}>
+                Quản lý nhân viên
+              </Button>
+            </Box>
+          )}
+
+          {user.role === "member" && (
+            <Box className="m-4">
+              <Button fullWidth type="highlight" onClick={() => navigate("/member")}>
+                Quyền lợi thành viên
+              </Button>
+            </Box>
+          )}
+
+          {user.role === "customer" && (
+            <Box className="m-4">
+              <Text className="text-center text-gray-500">
+                Bạn đang đăng nhập với tư cách Khách hàng
+              </Text>
+            </Box>
+          )}
+
+          {/* Nút đăng xuất luôn hiện khi có user */}
+          <Box className="m-4">
+            <Button fullWidth type="danger" onClick={handleLogout}>
+              Đăng xuất
+            </Button>
+          </Box>
+        </>
+      )}
     </Page>
   );
 };
+
+
 
 export default ProfilePage;

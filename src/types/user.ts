@@ -1,14 +1,16 @@
-
+// Định nghĩa Tier
 export type Tier = "bronze" | "silver" | "gold" | "diamond";
 
-export interface User {
-  name?: string;
+// Định nghĩa User
+export type User = {
+  id: string;
+  name: string;
   avatar?: string;
-  tier: Tier;
+  tier?: Tier;
+  role: "admin" | "member" | "staff" | "customer";
   phone?: string;
   email?: string;
-}
-
+};
 
 // chuẩn hoá tier từ string → Tier
 export const normalizeTier = (raw?: string): Tier | null => {
@@ -17,7 +19,8 @@ export const normalizeTier = (raw?: string): Tier | null => {
   if (["đồng", "dong", "bronze"].includes(key)) return "bronze";
   if (["bạc", "bac", "silver"].includes(key)) return "silver";
   if (["vàng", "vang", "gold"].includes(key)) return "gold";
-  if (["kim cương", "kimcuong", "kim_cuong", "diamond"].includes(key)) return "diamond";
+  if (["kim cương", "kimcuong", "kim_cuong", "diamond"].includes(key))
+    return "diamond";
   return null;
 };
 
@@ -36,3 +39,26 @@ export const tierLabels: Record<Tier, string> = {
   gold: "Vàng",
   diamond: "Kim Cương",
 };
+
+// Hàm tạo user hợp lệ
+export const createUser = (data: Partial<User>): User => {
+  return {
+    id: data.id ?? `u_${Math.random().toString(36).slice(2, 9)}`, // sinh id ngẫu nhiên
+    name: data.name ?? "Người dùng mới",
+    avatar: data.avatar,
+    tier: data.tier ?? "bronze", // mặc định bronze
+    role: data.role ?? "customer", // mặc định customer
+    phone: data.phone,
+    email: data.email,
+  };
+};
+
+// -------------------- Ví dụ dùng --------------------
+const userInfo = createUser({
+  name: "Nguyễn Tuấn Anh",
+  avatar: "https://example.com/avatar.png",
+  tier: "bronze",
+  email: "example@gmail.com",
+});
+
+console.log(userInfo);

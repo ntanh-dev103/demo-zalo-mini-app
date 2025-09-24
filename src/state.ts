@@ -13,18 +13,44 @@ import { getItemKey } from "types/cart";
 import { User } from "types/user";
 import { Order } from "types/order";
 import categories from "../mock/categories.json";
-export const userInfoQuery = selector({
+
+/**
+ * Helper: tạo user an toàn (đảm bảo id + role)
+ */
+const createUserSafe = (data: Partial<User>): User => {
+  return {
+    id: data.id ?? `guest_${Math.random().toString(36).slice(2, 9)}`,
+    name: data.name ?? "Khách hàng",
+    avatar: data.avatar ?? "https://via.placeholder.com/100",
+    tier: (data.tier as any) ?? ("bronze" as any),
+    role: data.role ?? "customer",
+    ...(data as any), // giữ các field khác nếu có (phone, email,...)
+  } as User;
+};
+
+/**
+ * userInfoQuery - trả về User | null
+ * key phải duy nhất trong toàn project (ở đây dùng "userInfo")
+ */
+export const userInfoQuery = selector<User | null>({
   key: "userInfo",
   get: async () => {
     try {
       const { userInfo } = await getUserInfo({ autoRequestPermission: true });
-      return {
-        name: userInfo?.name ?? "Khách hàng",
-        avatar: userInfo?.avatar ?? "https://via.placeholder.com/100",
-        tier: "bronze" as const,
-        phone: "",
-        email: "",
-      };
+
+      const u = createUserSafe({
+        id: userInfo?.id,
+        name: userInfo?.name,
+        avatar: userInfo?.avatar,
+        // Nếu SDK cung cấp phone/email thì lấy, nếu không thì để rỗng
+        phone: (userInfo as any)?.phone ?? "",
+        email: (userInfo as any)?.email ?? "",
+        // mặc định tier + role
+        tier: "bronze",
+        role: "customer",
+      });
+
+      return u;
     } catch (e) {
       console.error("Error getting user info:", e);
       return null;
@@ -32,6 +58,9 @@ export const userInfoQuery = selector({
   },
 });
 
+/**
+ * userState atom - khởi tạo bằng kết quả userInfoQuery (effect)
+ */
 export const userState = atom<User | null>({
   key: "user",
   default: null,
@@ -46,6 +75,7 @@ export const userState = atom<User | null>({
   ],
 });
 
+/* ---------------- rest of your states (unchanged logic) ---------------- */
 
 export const orderHistoryState = atom<Order[]>({
   key: "orderHistory",
@@ -60,12 +90,12 @@ export const orderHistoryState = atom<Order[]>({
           productId: "P1",
           quantity: 2,
           price: 125000,
-        }
+        },
       ],
       shipping: {
         address: "123 Đường ABC, Quận 1, TP.HCM",
-        phone: "0123456789"
-      }
+        phone: "0123456789",
+      },
     },
     {
       id: "ORD002",
@@ -77,14 +107,14 @@ export const orderHistoryState = atom<Order[]>({
           productId: "P2",
           quantity: 1,
           price: 180000,
-        }
+        },
       ],
       shipping: {
         address: "456 Đường XYZ, Quận 2, TP.HCM",
-        phone: "0987654321"
-      }
-    }
-  ]
+        phone: "0987654321",
+      },
+    },
+  ],
 });
 
 export const categoriesState = selector<Category[]>({
@@ -97,8 +127,7 @@ export const productsState = selector<Product[]>({
   get: async () => {
     await wait(2000);
     const products = (await import("../mock/products.json")).default;
-    const variants = (await import("../mock/variants.json"))
-      .default as Variant[];
+    const variants = (await import("../mock/variants.json")).default as Variant[];
     return products.map(
       (product) =>
         ({
@@ -150,9 +179,8 @@ export const addToCartState = selector({
 
     // Add to cart
     set(cartState, [...cart, item]);
-  }
+  },
 });
-
 
 export type Coupon = {
   code: string;
@@ -165,8 +193,6 @@ export const couponState = atom<Coupon | null>({
   key: "coupon",
   default: null,
 });
-
-
 
 export const totalQuantityState = selector({
   key: "totalQuantity",
@@ -187,6 +213,7 @@ export const totalPriceState = selector({
     );
   },
 });
+
 export const totalPriceWithShippingState = selector({
   key: "totalPriceWithShipping",
   get: ({ get }) => {
@@ -249,12 +276,12 @@ export const finalTotalState = selector({
     };
   },
 });
+
 export const selectedCartItemsState = atom<string[]>({
   key: "selectedCartItems",
   default: [],
 });
 
-// Total price of only selected items
 export const selectedSubtotalState = selector({
   key: "selectedSubtotal",
   get: ({ get }) => {
@@ -264,10 +291,7 @@ export const selectedSubtotalState = selector({
     return cart.reduce((total, item) => {
       const key = getItemKey(item);
       if (selectedIds.includes(key)) {
-        return (
-          total +
-          item.quantity * calcFinalPrice(item.product, item.options)
-        );
+        return total + item.quantity * calcFinalPrice(item.product, item.options);
       }
       return total;
     }, 0);
@@ -288,6 +312,7 @@ export const selectedDiscountState = selector({
     return coupon.value;
   },
 });
+
 export const selectedTotalPriceState = selector({
   key: "selectedTotalPrice",
   get: ({ get }) => {
@@ -329,8 +354,8 @@ export const selectedFinalTotalState = selector({
     const shippingFee = shipping === "express" ? 30000 : 0;
     let discount = 0;
     if (coupon && subtotal > 0) {
-      discount = coupon.discountType === "percent" 
-        ? (subtotal * coupon.value) / 100 
+      discount = coupon.discountType === "percent"
+        ? (subtotal * coupon.value) / 100
         : coupon.value;
     }
 
@@ -344,7 +369,6 @@ export const selectedFinalTotalState = selector({
     };
   },
 });
-
 
 export const shippingMethodState = atom<"standard" | "express">({
   key: "shippingMethod",
