@@ -221,8 +221,8 @@ const NotificationList: FC = () => {
   size="small"
   className={`truncate ${
     !item.read
-      ? "text-blue-600 font-semibold" 
-      : "text-gray-700"               
+      ? "text-blue-600 font-semibold" // unread = blue + bold
+      : "text-gray-700"               // read = gray
   }`}
 >
   {item.title}

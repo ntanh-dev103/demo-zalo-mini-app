@@ -222,7 +222,6 @@ const NotificationList: FC = () => {
   className={`truncate ${
     !item.read
       ? "text-blue-600 font-semibold" 
-      : "text-gray-700"               
   }`}
 >
   {item.title}

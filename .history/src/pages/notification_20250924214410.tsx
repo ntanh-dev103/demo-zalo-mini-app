@@ -218,15 +218,17 @@ const NotificationList: FC = () => {
             <Box className="flex-1 min-w-0">
               <Box className="flex justify-between items-center mb-1">
                 <Text.Header
-  size="small"
-  className={`truncate ${
-    !item.read
-      ? "text-blue-600 font-semibold" 
-      : "text-gray-700"               
-  }`}
->
-  {item.title}
-</Text.Header>
+                  size="small"
+                  className={`${
+                    item.type === "order"
+                      ? "text-primary"
+                      : item.type === "promotion"
+                      ? "text-green-600"
+                      : "text-blue-600"
+                  } truncate`}
+                >
+                  {item.title}
+                </Text.Header>
                 <Text size="xxSmall" className="text-gray-500">
                   {(() => {
                     try {

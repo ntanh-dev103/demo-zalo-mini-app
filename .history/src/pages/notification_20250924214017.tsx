@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { ListRenderer } from "components/list-renderer";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { cartState, orderHistoryState, phoneState } from "state";
@@ -10,31 +10,41 @@ import { Product } from "types/product";
 import { Order } from "types/order";
 import { Divider } from "components/divider";
 import { useNavigate } from "react-router-dom";
-import { Notification } from "types/notification";
 
 const NotificationList: FC = () => {
   const navigate = useNavigate();
   const notifications = useRecoilValue(notificationsState);
   const setNotifications = useSetRecoilState(notificationsState);
   const setCart = useSetRecoilState(cartState);
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [selectedNotification, setSelectedNotification] = React.useState<null | {
+    id: number;
+    title: string;
+    orderDetails?: {
+      products: Array<{
+        name: string;
+        price: string;
+        image: string;
+      }>;
+      total: string;
+      shop: string;
+      status: string;
+    };
+  }>(null);
   const setOrders = useSetRecoilState(orderHistoryState);
   const phone = useRecoilValue(phoneState);
   const { openSnackbar } = useSnackbar();
 
-  const handleBuyAction = (
-    productInfo: { name: string; price: string; image: string },
-    buyNow: boolean = false
-  ) => {
+  const handleBuyAction = (productInfo: { name: string; price: string; image: string }, buyNow: boolean = false) => {
     try {
-      const price = parseInt(productInfo.price.replace(/[^\d]/g, ""), 10);
-
+      // Convert string price to number by removing currency symbol and commas
+      const price = parseInt(productInfo.price.replace(/[^\d]/g, ''));
+      
       const product: Product = {
-        id: Date.now(),
+        id: Date.now(), // Generate temporary id
         name: productInfo.name,
         image: productInfo.image,
-        price,
-        categoryId: [],
+        price: price,
+        categoryId: [] // Default empty category
       };
 
       if (buyNow) {
@@ -43,65 +53,71 @@ const NotificationList: FC = () => {
           date: new Date().toISOString(),
           status: "pending",
           total: price,
-          items: [
-            {
-              productId: product.id.toString(),
-              quantity: 1,
-              price,
-            },
-          ],
+          items: [{
+            productId: product.id.toString(),
+            quantity: 1,
+            price: price
+          }],
           shipping: {
             address: "",
-            phone: typeof phone === "string" ? phone : "",
-          },
+            phone: typeof phone === 'string' ? phone : ""
+          }
         };
 
-        setOrders((prev) => [newOrder, ...prev]);
+        setOrders(prev => [newOrder, ...prev]);
+        
+        setNotifications(prev => [{
+          id: Date.now(),
+          type: "order",
+          title: "Đặt hàng thành công",
+          content: `Đơn hàng ${newOrder.id} đã được tạo thành công`,
+          timestamp: new Date().toISOString(),
+          image: product.image,
+          orderId: newOrder.id,
+          read: false,
+          orderDetails: {
+            products: [{
+              name: product.name,
+              price: `${price.toLocaleString()}đ`,
+              image: product.image
+            }],
+            total: `${price.toLocaleString()}đ`,
+            shop: "Shop Online",
+            status: "Đang chờ xác nhận"
+          }
+        }, ...prev]);
 
-        setNotifications((prev) => [
-          {
-            id: Date.now(),
-            type: "order",
-            title: "Đặt hàng thành công",
-            content: `Đơn hàng ${newOrder.id} đã được tạo thành công`,
-            timestamp: new Date().toISOString(),
-            image: product.image,
-            orderId: newOrder.id,
-            read: false,
-            orderDetails: {
-              products: [
-                {
-                  name: product.name,
-                  price: `${price.toLocaleString()}đ`,
-                  image: product.image,
-                },
-              ],
-              total: `${price.toLocaleString()}đ`,
-              shop: "Shop Online",
-              status: "Đang chờ xác nhận",
-            },
-          },
-          ...prev,
-        ]);
+        openSnackbar({
+          text: "Đặt hàng thành công!",
+          duration: 1500
+        });
 
-        openSnackbar({ text: "Đặt hàng thành công!", duration: 1500 });
         setSelectedNotification(null);
         navigate("/orders");
       } else {
-        const cartItem: CartItem = { product, options: {}, quantity: 1 };
-        setCart((prev) => [...prev, cartItem]);
+        const cartItem: CartItem = {
+          product: product,
+          options: {},
+          quantity: 1
+        };
 
-        openSnackbar({ text: "Đã thêm vào giỏ hàng", duration: 1500 });
+        setCart(prev => [...prev, cartItem]);
+        openSnackbar({
+          text: "Đã thêm vào giỏ hàng",
+          duration: 1500
+        });
         setSelectedNotification(null);
         navigate("/cart");
       }
     } catch (error) {
-      console.error("Error:", error);
-      openSnackbar({ text: "Có lỗi xảy ra, vui lòng thử lại", duration: 1500 });
+      console.error('Error:', error);
+      openSnackbar({
+        text: "Có lỗi xảy ra, vui lòng thử lại",
+        duration: 1500
+      });
     }
   };
-
-  if (!notifications || notifications.length === 0) {
+  if (!notifications) {
     return (
       <Box className="flex-1 flex items-center justify-center">
         <Text className="text-gray-500">Không có thông báo</Text>
@@ -116,7 +132,12 @@ const NotificationList: FC = () => {
         visible={selectedNotification !== null}
         title={selectedNotification?.title || "Chi tiết đơn hàng"}
         onClose={() => setSelectedNotification(null)}
-        actions={[{ text: "Đóng", close: true }]}
+        actions={[
+          {
+            text: "Đóng",
+            close: true
+          }
+        ]}
       >
         {selectedNotification?.orderDetails && (
           <Box className="space-y-4">
@@ -126,7 +147,7 @@ const NotificationList: FC = () => {
               </Text.Header>
               <Text>{selectedNotification.orderDetails.shop}</Text>
             </Box>
-
+            
             <Box className="space-y-2">
               <Text.Header size="small" className="text-gray-600">
                 Trạng thái
@@ -141,22 +162,14 @@ const NotificationList: FC = () => {
               {selectedNotification.orderDetails.products.map((product, index) => (
                 <Box key={index} className="flex flex-col space-y-2 p-2 border rounded">
                   <Box className="flex items-center space-x-3">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-16 h-16 rounded object-cover"
-                    />
+                    <img src={product.image} alt={product.name} className="w-16 h-16 rounded object-cover" />
                     <Box className="flex-1">
-                      <Text size="small" className="font-medium">
-                        {product.name}
-                      </Text>
-                      <Text size="xSmall" className="text-gray-500">
-                        {product.price}
-                      </Text>
+                      <Text size="small" className="font-medium">{product.name}</Text>
+                      <Text size="xSmall" className="text-gray-500">{product.price}</Text>
                     </Box>
                   </Box>
                   <Box className="flex space-x-2 pt-2 border-t">
-                    <Button
+                    <Button 
                       size="small"
                       onClick={() => handleBuyAction(product)}
                       className="flex-1"
@@ -164,7 +177,7 @@ const NotificationList: FC = () => {
                     >
                       Thêm vào giỏ
                     </Button>
-                    <Button
+                    <Button 
                       size="small"
                       onClick={() => handleBuyAction(product, true)}
                       className="flex-1"
@@ -187,65 +200,73 @@ const NotificationList: FC = () => {
       </Modal>
 
       {/* Notifications List */}
-      <ListRenderer<Notification>
+      <ListRenderer
         noDivider
         items={notifications}
-        renderKey={(item) => item.id.toString()}
         renderLeft={(item) => (
-          <Box
-            className="
-              flex items-center w-full space-x-3 p-3 
-              rounded-md shadow-sm border border-gray-200 
-              hover:bg-blue-200 hover:shadow-md hover:border-primary transition-all duration-200
-              cursor-pointer
-            "
-            onClick={() => {
-              setNotifications(
-                notifications.map((n) =>
-                  n.id === item.id ? { ...n, read: true } : n
-                )
-              );
-              if (item.orderDetails) {
-                setSelectedNotification(item);
-              }
-            }}
-          >
-            <img
-              className="w-10 h-10 rounded-full flex-shrink-0"
-              src={item.image}
-              alt={item.title}
-            />
-            <Box className="flex-1 min-w-0">
-              <Box className="flex justify-between items-center mb-1">
-                <Text.Header
-  size="small"
-  className={`truncate ${
-    !item.read
-      ? "text-blue-600 font-semibold" 
-      : "text-gray-700"               
-  }`}
->
-  {item.title}
-</Text.Header>
-                <Text size="xxSmall" className="text-gray-500">
-                  {(() => {
-                    try {
-                      return new Date(item.timestamp).toLocaleDateString("vi-VN");
-                    } catch {
-                      return "";
-                    }
-                  })()}
-                </Text>
-              </Box>
-              <Text size="xxSmall" className="text-gray-600 truncate">
-                {item.content || "Không có nội dung"}
-              </Text>
-            </Box>
-          </Box>
-        )}
-        renderRight={() => null}
+    <Box
+      className="
+        flex items-center w-full space-x-3 p-3 
+        rounded-md shadow-sm border border-gray-200 
+        hover:bg-blue-200 hover:shadow-md hover:border-primary transition-all duration-200
+        cursor-pointer
+      "
+      onClick={() => {
+        // Mark notification as read
+        setNotifications(notifications.map(n => 
+          n.id === item.id ? { ...n, read: true } : n
+        ));
+        
+        // Show modal if it has order details
+        if (item.orderDetails) {
+          setSelectedNotification(item);
+        }
+      }}
+    >
+      <img
+        className="w-10 h-10 rounded-full flex-shrink-0"
+        src={item.image}
+        alt={item.title}
       />
+      <Box className="flex-1 min-w-0">
+        <Box className="flex justify-between items-center mb-1">
+          <Text.Header
+            size="small"
+            className={`${
+              item.type === "order" 
+                ? "text-primary" 
+                : item.type === "promotion" 
+                  ? "text-green-600" 
+                  : "text-blue-600"
+            } truncate`}
+          >
+            {item.title}
+          </Text.Header>
+          <Text size="xxSmall" className="text-gray-500">
+            {(() => {
+              try {
+                return new Date(item.timestamp).toLocaleDateString("vi-VN");
+              } catch (error) {
+                return "";
+              }
+            })()}
+          </Text>
+        </Box>
+        <Text
+          size="xxSmall"
+          className="text-gray-600 truncate"
+        >
+          {item.content || "Không có nội dung"}
+        </Text>
+      </Box>
     </Box>
+  )}
+  renderRight={() => null}
+/>
+
+</Box>
+
+
   );
 };
 
