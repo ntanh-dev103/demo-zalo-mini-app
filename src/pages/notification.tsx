@@ -1,26 +1,64 @@
-import React, { FC, useState } from "react";
+import { Divider } from "components/divider";
 import { ListRenderer } from "components/list-renderer";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { Component, FC, ReactNode, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from "recoil";
 import { cartState, orderHistoryState, phoneState } from "state";
 import { notificationsState } from "state/notifications";
-import { Box, Header, Page, Text, Modal, Button, useSnackbar } from "zmp-ui";
 import { CartItem } from "types/cart";
-import { getRandomId } from "utils/product";
-import { Product } from "types/product";
-import { Order } from "types/order";
-import { Divider } from "components/divider";
-import { useNavigate } from "react-router-dom";
 import { Notification } from "types/notification";
+import { Order } from "types/order";
+import { Product } from "types/product";
+import { getRandomId } from "utils/product";
+import { Box, Button, Header, Modal, Page, Text, useSnackbar } from "zmp-ui";
 
-const NotificationList: FC = () => {
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error("Error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Box className="flex-1 flex items-center justify-center">
+          <Text className="text-red-500">Có lỗi xảy ra. Vui lòng thử lại.</Text>
+        </Box>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+const NotificationListContent: FC = () => {
   const navigate = useNavigate();
   const notifications = useRecoilValue(notificationsState);
   const setNotifications = useSetRecoilState(notificationsState);
   const setCart = useSetRecoilState(cartState);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const setOrders = useSetRecoilState(orderHistoryState);
-  const phone = useRecoilValue(phoneState);
+  const phoneLoadable = useRecoilValueLoadable(phoneState);
   const { openSnackbar } = useSnackbar();
+
+  // Get phone value safely
+  const phone = phoneLoadable.state === "hasValue" ? phoneLoadable.contents : "";
 
   const handleBuyAction = (
     productInfo: { name: string; price: string; image: string },
@@ -246,6 +284,14 @@ const NotificationList: FC = () => {
         renderRight={() => null}
       />
     </Box>
+  );
+};
+
+const NotificationList: FC = () => {
+  return (
+    <ErrorBoundary>
+      <NotificationListContent />
+    </ErrorBoundary>
   );
 };
 
