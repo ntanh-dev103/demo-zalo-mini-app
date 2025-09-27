@@ -17,6 +17,8 @@ import categories from "../mock/categories.json";
 /**
  * Helper: tạo user an toàn (đảm bảo id + role)
  */
+
+/* ========== Helper: tạo user an toàn ========== */
 const createUserSafe = (data: Partial<User>): User => {
   return {
     id: data.id ?? `guest_${Math.random().toString(36).slice(2, 9)}`,
@@ -28,29 +30,22 @@ const createUserSafe = (data: Partial<User>): User => {
   } as User;
 };
 
-/**
- * userInfoQuery - trả về User | null
- * key phải duy nhất trong toàn project (ở đây dùng "userInfo")
- */
+/* ========== Lấy user từ SDK Zalo ========== */
 export const userInfoQuery = selector<User | null>({
   key: "userInfo",
   get: async () => {
     try {
       const { userInfo } = await getUserInfo({ autoRequestPermission: true });
 
-      const u = createUserSafe({
+      return createUserSafe({
         id: userInfo?.id,
         name: userInfo?.name,
         avatar: userInfo?.avatar,
-        // Nếu SDK cung cấp phone/email thì lấy, nếu không thì để rỗng
         phone: (userInfo as any)?.phone ?? "",
         email: (userInfo as any)?.email ?? "",
-        // mặc định tier + role
         tier: "bronze",
         role: "customer",
       });
-
-      return u;
     } catch (e) {
       console.error("Error getting user info:", e);
       return null;
@@ -58,9 +53,7 @@ export const userInfoQuery = selector<User | null>({
   },
 });
 
-/**
- * userState atom - khởi tạo bằng kết quả userInfoQuery (effect)
- */
+/* ========== userState chính ========== */
 export const userState = atom<User | null>({
   key: "user",
   default: null,
@@ -74,6 +67,7 @@ export const userState = atom<User | null>({
     },
   ],
 });
+
 
 /* ---------------- rest of your states (unchanged logic) ---------------- */
 

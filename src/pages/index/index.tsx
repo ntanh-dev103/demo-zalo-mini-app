@@ -7,6 +7,8 @@ import { Categories } from "./categories";
 import { Recommend } from "./recommend";
 import { ProductList } from "./product-list";
 import { Divider } from "components/divider";
+import MembershipUpgrade from "./membership-upgrade";
+
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -18,6 +20,9 @@ const HomePage: React.FunctionComponent = () => {
         <Suspense>
           <Categories />
         </Suspense>
+        <MembershipUpgrade />
+        <Divider />
+
         <Divider />
         <Recommend />
         <Divider />

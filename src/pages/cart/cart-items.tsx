@@ -56,7 +56,8 @@ export const CartItems: FC = React.memo(() => {
           renderKey={(item) => getItemKey(item)}
           itemClassName="w-full p-4 bg-white rounded-xl shadow hover:shadow-md transition-all duration-200"
           renderLeft={(item) => (
-            <Box flex className="items-start space-x-3">
+            // FIX 1: Dùng items-center hoặc items-end để kéo checkbox xuống
+            <Box flex className="items-center space-x-3 h-full"> 
               <input
                 type="checkbox"
                 checked={selectedItems.includes(getItemKey(item))}
@@ -79,25 +80,43 @@ export const CartItems: FC = React.memo(() => {
             </Box>
           )}
           renderRight={(item) => (
-            <Box flex className="flex-1 justify-between items-start">
-              {/* Product info */}
-              <Box className="space-y-1 flex-1 pr-4">
-                <Text size="xSmall" className="font-medium text-primary">
+            // BỐ CỤC CHÍNH: Flex cột để chia thành 2 hàng dọc rõ ràng
+            <Box flex flexDirection="column" className="flex-1 justify-between items-start space-y-1 h-full">
+              
+              {/* Hàng 1: Tên, Tùy chọn, và Giá tiền */}
+              <Box flex flexDirection="column" className="w-full justify-start items-start">
+                {/* Tên sản phẩm */}
+                <Text size="small" className="font-semibold text-blue-600 mb-1">
                   {item.product.name}
                 </Text>
-                <Text size="xxSmall" className="text-gray">
+
+                {/* Tùy chọn */}
+                <Text size="xxSmall" className="text-gray mb-1">
                   <DisplaySelectedOptions options={item.options}>
                     {item.product}
                   </DisplaySelectedOptions>
                 </Text>
+                
+                {/* Giá tiền */}
+                <Text
+                  className="font-bold text-red-500 whitespace-nowrap"
+                  size="small"
+                >
+                  <FinalPrice options={item.options} showOriginal={false}>
+                    {item.product}
+                  </FinalPrice>
+                </Text>
               </Box>
 
-              {/* Quantity + Price */}
-              <Box flex className="items-center space-x-3">
+              {/* Hàng 2: Số lượng (Kéo lên và căn chỉnh sang phải) */}
+              {/* FIX 2: Thêm -mt-4 hoặc -mt-6 để kéo khối này lên trên */}
+              <Box flex className="w-full justify-end items-center -mt-4"> 
+                
+                {/* Số lượng */}
                 <Box flex className="items-center space-x-2">
                   <Button
                     size="small"
-                    className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
+                    className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center bg-blue-500 text-white active:bg-blue-600"
                     onClick={(e) => {
                       e.stopPropagation();
                       updateQuantity(item, -1);
@@ -110,7 +129,7 @@ export const CartItems: FC = React.memo(() => {
                   </Text>
                   <Button
                     size="small"
-                    className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center"
+                    className="w-7 h-7 min-w-0 rounded-full p-0 flex items-center justify-center bg-blue-500 text-white active:bg-blue-600"
                     onClick={(e) => {
                       e.stopPropagation();
                       updateQuantity(item, +1);
@@ -118,16 +137,6 @@ export const CartItems: FC = React.memo(() => {
                   >
                     +
                   </Button>
-                </Box>
-                <Box flex className="flex-col items-end">
-                  <Text
-                    className="font-semibold text-blue-600 whitespace-nowrap"
-                    size="xxSmall"
-                  >
-                    <FinalPrice options={item.options} showOriginal={false}>
-                      {item.product}
-                    </FinalPrice>
-                  </Text>
                 </Box>
               </Box>
             </Box>

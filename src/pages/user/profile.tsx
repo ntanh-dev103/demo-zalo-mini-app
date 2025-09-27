@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Box, Header, Icon, Page, Text, Avatar, Button } from "zmp-ui"; 
+import { Box, Header, Icon, Page, Text, Avatar, Button } from "zmp-ui";
 import subscriptionDecor from "static/subscription-decor.svg";
 import { ListRenderer } from "components/list-renderer";
 import { useNavigate } from "react-router-dom";
@@ -17,24 +17,13 @@ const UserInfo: FC = () => {
       <Box className="flex flex-col items-center p-6">
         <Avatar src="https://via.placeholder.com/100" size={80} />
         <Text.Title className="mt-3">Khách hàng</Text.Title>
-        <Button
-  className="mt-3"
-  type="highlight"
-  onClick={() => console.log("Đi đến đăng nhập")}
->
-  Đăng nhập
-</Button>
-
       </Box>
     );
   }
 
   return (
     <Box className="flex flex-col items-center p-6">
-      <Avatar
-        src={user.avatar ?? "https://via.placeholder.com/100"}
-        size={80}
-      />
+      <Avatar src={user.avatar ?? "https://via.placeholder.com/100"} size={80} />
       <Text.Title className="mt-3">{user.name}</Text.Title>
       {tierKey && (
         <Text className={`mt-1 font-medium ${tierColors[tierKey]}`}>
@@ -75,9 +64,7 @@ const Personal: FC = () => {
       left: <Icon icon="zi-user" />,
       right: (
         <Box flex>
-          <Text.Header className="flex-1 font-normal">
-            Thông tin tài khoản
-          </Text.Header>
+          <Text.Header className="flex-1 font-normal">Thông tin tài khoản</Text.Header>
           <Icon icon="zi-chevron-right" />
         </Box>
       ),
@@ -87,9 +74,7 @@ const Personal: FC = () => {
       left: <Icon icon="zi-clock-2" />,
       right: (
         <Box flex>
-          <Text.Header className="flex-1 font-normal">
-            Lịch sử đơn hàng
-          </Text.Header>
+          <Text.Header className="flex-1 font-normal">Lịch sử đơn hàng</Text.Header>
           <Icon icon="zi-chevron-right" />
         </Box>
       ),
@@ -99,9 +84,7 @@ const Personal: FC = () => {
       left: <Icon icon="zi-star" />,
       right: (
         <Box flex>
-          <Text.Header className="flex-1 font-normal">
-            Nâng hạng thành viên
-          </Text.Header>
+          <Text.Header className="flex-1 font-normal">Nâng hạng thành viên</Text.Header>
           <Icon icon="zi-chevron-right" />
         </Box>
       ),
@@ -135,9 +118,7 @@ const Other: FC = () => {
       left: <Icon icon="zi-call" />,
       right: (
         <Box flex>
-          <Text.Header className="flex-1 font-normal">
-            Liên hệ & góp ý
-          </Text.Header>
+          <Text.Header className="flex-1 font-normal">Liên hệ & góp ý</Text.Header>
           <Icon icon="zi-chevron-right" />
         </Box>
       ),
@@ -165,11 +146,11 @@ const Other: FC = () => {
 const ProfilePage: FC = () => {
   const navigate = useNavigate();
   const user = useRecoilValue<User | null>(userState);
+  const setUser = useSetRecoilState(userState);
 
   const handleLogout = () => {
-    console.log("User logged out");
-    // TODO: setUser(null) bằng useSetRecoilState để reset userState
-    navigate("/");
+    setUser(null); // reset user
+    navigate("/login"); // chuyển về trang đăng nhập
   };
 
   return (
@@ -177,28 +158,25 @@ const ProfilePage: FC = () => {
       <Header showBackIcon={false} title="Trang cá nhân" />
       <UserInfo />
 
-      {/* Nếu chưa đăng nhập → hiển thị nút đăng nhập */}
+      {/* Nếu chưa đăng nhập → chỉ hiện nút Đăng nhập */}
       {!user && (
         <Box className="m-4">
-          <Button
-            fullWidth
-            type="highlight"
-            onClick={() => navigate("/login")}
-          >
+          <Button fullWidth type="highlight" onClick={() => navigate("/login")}>
             Đăng nhập
           </Button>
         </Box>
       )}
 
-      {/* Nếu đã đăng nhập → chia role */}
+      {/* Nếu đã đăng nhập → hiển thị các phần */}
       {user && (
         <>
-          <Subscription />
+          {/* Ẩn Đăng ký thành viên nếu user là member */}
+          {user?.role !== "member" && <Subscription />}
           <Personal />
           <Other />
 
           {/* Quyền theo role */}
-          {user.role === "admin" && (
+          {user?.role === "admin" && (
             <Box className="m-4">
               <Button fullWidth type="highlight" onClick={() => navigate("/admin")}>
                 Quản trị hệ thống
@@ -206,7 +184,7 @@ const ProfilePage: FC = () => {
             </Box>
           )}
 
-          {user.role === "staff" && (
+          {user?.role === "staff" && (
             <Box className="m-4">
               <Button fullWidth type="highlight" onClick={() => navigate("/staff")}>
                 Quản lý nhân viên
@@ -214,7 +192,7 @@ const ProfilePage: FC = () => {
             </Box>
           )}
 
-          {user.role === "member" && (
+          {user?.role === "member" && (
             <Box className="m-4">
               <Button fullWidth type="highlight" onClick={() => navigate("/member")}>
                 Quyền lợi thành viên
@@ -222,7 +200,7 @@ const ProfilePage: FC = () => {
             </Box>
           )}
 
-          {user.role === "customer" && (
+          {user?.role === "customer" && (
             <Box className="m-4">
               <Text className="text-center text-gray-500">
                 Bạn đang đăng nhập với tư cách Khách hàng
@@ -230,18 +208,16 @@ const ProfilePage: FC = () => {
             </Box>
           )}
 
-          {/* Nút đăng xuất luôn hiện khi có user */}
+          {/* Nút đăng xuất */}
           <Box className="m-4">
             <Button fullWidth type="danger" onClick={handleLogout}>
               Đăng xuất
             </Button>
           </Box>
-        </>
+        </> 
       )}
     </Page>
   );
 };
-
-
 
 export default ProfilePage;

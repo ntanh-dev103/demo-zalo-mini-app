@@ -3,15 +3,13 @@ import { Box, Button, Header, Page, Text } from "zmp-ui";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { userState } from "state";
-import { Tier, User, tierLabels } from "types/user";
-
-/* ====== Thứ tự nâng hạng ====== */
-const upgradeOrder: Record<Tier, Tier | null> = {
-  bronze: "silver",
-  silver: "gold",
-  gold: "diamond",
-  diamond: null,
-};
+import {
+  Tier,
+  User,
+  tierLabels,
+  upgradeUserTier,
+  tierOrder,
+} from "types/user";
 
 /* ====== Quyền lợi mỗi hạng ====== */
 const tierBenefits: Record<Tier, string[]> = {
@@ -34,19 +32,25 @@ const tierBenefits: Record<Tier, string[]> = {
   ],
 };
 
-const tiers: Tier[] = ["bronze", "silver", "gold", "diamond"];
+/* ====== Icon & màu cho từng hạng ====== */
+const tierStyles: Record<Tier, { icon: string; color: string }> = {
+  bronze: { icon: "🥉", color: "text-amber-700" },
+  silver: { icon: "🥈", color: "text-gray-400" },
+  gold: { icon: "🥇", color: "text-yellow-500" },
+  diamond: { icon: "💎", color: "text-blue-400" },
+};
 
 const UpgradePage: FC = () => {
   const navigate = useNavigate();
   const [user, setUser] = useRecoilState<User | null>(userState);
 
-  // Ép kiểu Tier cho currentTier (nếu user?.tier undefined thì mặc định bronze)
   const currentTier = (user?.tier ?? "bronze") as Tier;
-  const nextTier = upgradeOrder[currentTier];
+  const currentIndex = Math.max(0, tierOrder.indexOf(currentTier));
+  const nextTier =
+    currentIndex < tierOrder.length - 1 ? tierOrder[currentIndex + 1] : null;
 
-  // Index để tính progress
-  const currentIndex = Math.max(0, tiers.indexOf(currentTier));
-  const progress = ((currentIndex + 1) / tiers.length) * 100;
+  // Progress theo cấp độ
+  const progress = ((currentIndex + 1) / tierOrder.length) * 100;
 
   const handleUpgrade = () => {
     if (!nextTier) {
@@ -54,21 +58,7 @@ const UpgradePage: FC = () => {
       return;
     }
 
-    // Nếu chưa có user thì tạo guest user tạm và gán tier mới
-    if (!user) {
-      const guestUser: User = {
-        id: `guest_${Math.random().toString(36).slice(2, 9)}`,
-        name: "Khách hàng",
-        avatar: "https://via.placeholder.com/100",
-        tier: nextTier,
-        role: "customer",
-      };
-      setUser(guestUser);
-    } else {
-      // Dùng updater để an toàn (tránh race condition)
-      setUser((prev) => (prev ? { ...prev, tier: nextTier } : prev));
-    }
-
+    setUser((prev) => (prev ? upgradeUserTier(prev) : null));
     alert(`🎉 Chúc mừng! Bạn đã được nâng lên hạng ${tierLabels[nextTier]}`);
     navigate("/profile");
   };
@@ -81,41 +71,56 @@ const UpgradePage: FC = () => {
         {/* Thanh tiến trình */}
         <Box className="bg-white rounded-lg p-4 shadow">
           <Text.Title className="font-bold mb-3">Tiến trình hạng</Text.Title>
-          <Box className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+          <Box className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
             <Box
-              className="bg-primary h-full rounded-full transition-all duration-500 ease-out"
+              className="bg-primary h-full rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </Box>
           <Box flex className="justify-between items-center mt-3">
-            <Text className="font-medium text-primary">
+            <Text className="font-medium flex items-center gap-1">
+              <span className={tierStyles[currentTier].color}>
+                {tierStyles[currentTier].icon}
+              </span>
               {tierLabels[currentTier]}
             </Text>
-            <Text className="text-gray">
-              {nextTier ? `→ ${tierLabels[nextTier]}` : "🌟 Đã đạt hạng cao nhất"}
+            <Text className="text-gray-500 text-sm">
+              {nextTier ? `→ ${tierLabels[nextTier]}` : "🌟 Hạng cao nhất"}
             </Text>
           </Box>
         </Box>
 
-        {/* Danh sách quyền lợi các hạng */}
+        {/* Danh sách quyền lợi */}
         <Box className="space-y-4">
-          {tiers.map((tier) => (
-            <Box
-              key={tier}
-              className={`p-4 rounded-xl shadow ${
-                currentTier === tier ? "border-2 border-blue-500" : "border"
-              }`}
-            >
-              <Text.Title className="font-bold">{tierLabels[tier]}</Text.Title>
-              <ul className="list-disc ml-5 mt-2 space-y-1">
-                {tierBenefits[tier].map((benefit, i) => (
-                  <li key={i}>
-                    <Text size="small">{benefit}</Text>
-                  </li>
-                ))}
-              </ul>
-            </Box>
-          ))}
+          {tierOrder.map((tier) => {
+            const isActive = currentTier === tier;
+            return (
+              <Box
+                key={tier}
+                className={`p-4 rounded-xl shadow transition ${
+                  isActive ? "border-2 border-primary bg-blue-50" : "border"
+                }`}
+              >
+                <Text.Title className="font-bold flex items-center gap-2">
+                  <span className={tierStyles[tier].color}>
+                    {tierStyles[tier].icon}
+                  </span>
+                  {tierLabels[tier]}
+                  {isActive && (
+                    <span className="text-xs text-primary">(Hiện tại)</span>
+                  )}
+                </Text.Title>
+
+                <ul className="list-disc ml-5 mt-2 space-y-1">
+                  {tierBenefits[tier].map((benefit, i) => (
+                    <li key={i}>
+                      <Text size="small">{benefit}</Text>
+                    </li>
+                  ))}
+                </ul>
+              </Box>
+            );
+          })}
         </Box>
 
         {/* Nút nâng hạng */}

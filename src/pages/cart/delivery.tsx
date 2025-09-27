@@ -1,10 +1,9 @@
 import React, { FC, Suspense, useState } from "react";
-import { Box, Icon, Text } from "zmp-ui";
+import { Box, Icon, Text, Radio } from "zmp-ui";
 import { ElasticTextarea } from "components/elastic-textarea";
 import { ListRenderer } from "components/list-renderer";
 import { CouponPicker } from "./coupon-picker";
 import { Transportation } from "./transportation";
-import { TimePicker } from "./time-picker";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   orderNoteState,
@@ -13,6 +12,7 @@ import {
   selectedFinalTotalState,
 } from "state";
 import { ErrorBoundary } from "components/error-boundary";
+import { LocationPicker } from "./location-picker";
 
 type DeliveryItem = {
   left: React.ReactNode;
@@ -25,19 +25,15 @@ const DeliveryContent: FC = () => {
   const totals = useRecoilValue(selectedFinalTotalState);
   const coupon = useRecoilValue(couponState);
 
+  // state cho phương thức thanh toán
+  const [paymentMethod, setPaymentMethod] = useState<"visa" | "atm" | "cod">(
+    "cod"
+  );
+
   const items: DeliveryItem[] = [
     {
-      left: <Icon icon="zi-clock-1" className="my-auto text-blue-600" />,
-      right: (
-        <Box flex className="justify-between flex-none w-full">
-          <Box className="flex-1 space-y-1">
-            <TimePicker />
-            <Text size="xSmall" className="text-gray-500">
-              Thời gian nhận hàng
-            </Text>
-          </Box>
-        </Box>
-      ),
+      left: <Icon icon="zi-location-solid" className="my-auto text-red-500" />,
+      right: <LocationPicker />,
     },
     {
       left: <Icon icon="zi-exclamation" className="my-auto text-orange-500" />,
@@ -59,6 +55,82 @@ const DeliveryContent: FC = () => {
         />
       ),
     },
+    // 📌 Payment Method
+    {
+      left: <div className="my-auto text-blue-600">💳</div>,
+      right: (
+        <Box className="space-y-4">
+          <Radio.Group
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e as "visa" | "atm" | "cod")}
+          >
+            {/* Visa */}
+            <Box>
+              <Radio value="visa">💳 Thẻ Visa</Radio>
+              {paymentMethod === "visa" && (
+                <Box className="ml-6 mt-2 p-3 border rounded-lg bg-gray-50 space-y-2">
+                  <Text className="text-sm text-gray-600 font-medium">
+                    Nhập thông tin thẻ Visa:
+                  </Text>
+                  <input
+                    type="text"
+                    placeholder="Số thẻ Visa"
+                    className="w-full border p-2 rounded mb-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tên chủ thẻ"
+                    className="w-full border p-2 rounded mb-2"
+                  />
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="w-1/2 border p-2 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="CVV"
+                      className="w-1/2 border p-2 rounded"
+                    />
+                  </div>
+                </Box>
+              )}
+            </Box>
+
+            {/* ATM */}
+            <Box>
+              <Radio value="atm">🏦 Thẻ ATM</Radio>
+              {paymentMethod === "atm" && (
+                <Box className="ml-6 mt-2 p-3 border rounded-lg bg-gray-50">
+                  <Text className="text-sm text-gray-600 font-medium">
+                    Chọn ngân hàng liên kết:
+                  </Text>
+                  <select className="w-full border p-2 rounded mt-2">
+                    <option>Vietcombank</option>
+                    <option>Techcombank</option>
+                    <option>ACB</option>
+                  </select>
+                </Box>
+              )}
+            </Box>
+
+            {/* COD */}
+            <Box>
+              <Radio value="cod">📦 Thanh toán khi nhận hàng (COD)</Radio>
+              {paymentMethod === "cod" && (
+                <Box className="ml-6 mt-2 p-3 border rounded-lg bg-gray-50">
+                  <Text className="text-sm text-gray-600">
+                    Bạn sẽ thanh toán trực tiếp cho nhân viên giao hàng khi
+                    nhận sản phẩm.
+                  </Text>
+                </Box>
+              )}
+            </Box>
+          </Radio.Group>
+        </Box>
+      ),
+    },
   ];
 
   return (
@@ -71,7 +143,7 @@ const DeliveryContent: FC = () => {
         <ListRenderer<DeliveryItem>
           items={items}
           limit={6}
-          itemClassName="w-full p-6 mb-4 bg-white rounded-xl shadow hover:shadow-md hover:bg-gray-50 transition-all duration-200"
+          itemClassName="w-full px-4 py-3 border-b last:border-b-0 bg-white"
           renderLeft={(item) => item.left}
           renderRight={(item) => item.right}
         />
@@ -95,6 +167,16 @@ const DeliveryContent: FC = () => {
         </Text>
         <Text className="font-bold text-lg mt-2 pt-2 border-t border-gray-200 text-primary">
           Tổng thanh toán: {totals.total.toLocaleString()}₫
+        </Text>
+
+        {/* Hiển thị phương thức thanh toán đã chọn */}
+        <Text className="text-sm text-gray-600">
+          Phương thức thanh toán:{" "}
+          {paymentMethod === "visa"
+            ? "Thẻ Visa"
+            : paymentMethod === "atm"
+            ? "Thẻ ATM"
+            : "Thanh toán khi nhận hàng (COD)"}
         </Text>
       </Box>
     </Box>

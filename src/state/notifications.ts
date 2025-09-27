@@ -8,7 +8,7 @@ export const notificationsState = atom<Notification[]>({
     {
       id: 1,
       image: logo,
-      title: "Chào mừng bạn đến với ZaUI Coffee",
+      title: "Chào mừng bạn đến với Zalo Shop",
       content: "Cảm ơn bạn đã sử dụng ứng dụng của chúng tôi",
       timestamp: new Date().toISOString(),
       type: "system",

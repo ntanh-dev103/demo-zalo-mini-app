@@ -1,18 +1,23 @@
-// Định nghĩa Tier
+// ================== Định nghĩa Tier ==================
 export type Tier = "bronze" | "silver" | "gold" | "diamond";
 
-// Định nghĩa User
-export type User = {
-  id: string;
-  name: string;
-  avatar?: string;
-  tier?: Tier;
-  role: "admin" | "member" | "staff" | "customer";
-  phone?: string;
-  email?: string;
+export const tierOrder: Tier[] = ["bronze", "silver", "gold", "diamond"];
+
+export const tierLabels: Record<Tier, string> = {
+  bronze: "Đồng",
+  silver: "Bạc",
+  gold: "Vàng",
+  diamond: "Kim Cương",
 };
 
-// chuẩn hoá tier từ string → Tier
+export const tierColors: Record<Tier, string> = {
+  bronze: "text-amber-700",
+  silver: "text-gray-400",
+  gold: "text-yellow-500",
+  diamond: "text-blue-400",
+};
+
+// Chuẩn hoá tier từ string → Tier
 export const normalizeTier = (raw?: string): Tier | null => {
   if (!raw) return null;
   const key = raw.trim().toLowerCase();
@@ -24,23 +29,21 @@ export const normalizeTier = (raw?: string): Tier | null => {
   return null;
 };
 
-// màu hiển thị cho tier
-export const tierColors: Record<Tier, string> = {
-  bronze: "text-amber-700",
-  silver: "text-gray-400",
-  gold: "text-yellow-500",
-  diamond: "text-blue-400",
+// ================== Định nghĩa Role ==================
+export type Role = "admin" | "member" | "staff" | "customer";
+
+// ================== Định nghĩa User ==================
+export type User = {
+  id: string;
+  name: string;
+  avatar?: string;
+  tier: Tier; // luôn có tier
+  role: Role;
+  phone?: string;
+  email?: string;
 };
 
-// nhãn hiển thị cho tier
-export const tierLabels: Record<Tier, string> = {
-  bronze: "Đồng",
-  silver: "Bạc",
-  gold: "Vàng",
-  diamond: "Kim Cương",
-};
-
-// Hàm tạo user hợp lệ
+// ================== Factory tạo User ==================
 export const createUser = (data: Partial<User>): User => {
   return {
     id: data.id ?? `u_${Math.random().toString(36).slice(2, 9)}`, // sinh id ngẫu nhiên
@@ -53,7 +56,24 @@ export const createUser = (data: Partial<User>): User => {
   };
 };
 
-// -------------------- Ví dụ dùng --------------------
+// ================== Helper nâng / hạ cấp tier ==================
+export const upgradeUserTier = (user: User): User => {
+  const currentIndex = tierOrder.indexOf(user.tier);
+  if (currentIndex === -1 || currentIndex === tierOrder.length - 1) {
+    return user; // đã ở hạng cao nhất
+  }
+  return { ...user, tier: tierOrder[currentIndex + 1] };
+};
+
+export const downgradeUserTier = (user: User): User => {
+  const currentIndex = tierOrder.indexOf(user.tier);
+  if (currentIndex <= 0) {
+    return user; // đã ở hạng thấp nhất
+  }
+  return { ...user, tier: tierOrder[currentIndex - 1] };
+};
+
+// ================== Ví dụ dùng ==================
 const userInfo = createUser({
   name: "Nguyễn Tuấn Anh",
   avatar: "https://example.com/avatar.png",
@@ -61,4 +81,5 @@ const userInfo = createUser({
   email: "example@gmail.com",
 });
 
-console.log(userInfo);
+console.log("👉 User:", userInfo);
+console.log("👉 Upgrade:", upgradeUserTier(userInfo));
